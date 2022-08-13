@@ -1,20 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useContext, useEffect, useState } from "react";
+import { StyleSheet, LogBox, View, StatusBar } from "react-native";
+// import colors from "./app/config/colors";
+import RootNavigation from "./app/RootNavigation";
+import * as SplashScreen from "expo-splash-screen";
+
+LogBox.ignoreAllLogs(true);
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+  const [isLoadingComplete, setLoadingComplete] = useState(false);
+  useEffect(() => {
+    async function loadResourcesAndDataAsync() {
+      try {
+        SplashScreen.preventAutoHideAsync();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setLoadingComplete(true);
+        SplashScreen.hideAsync();
+      }
+    }
+    loadResourcesAndDataAsync();
+  }, []);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  // if (isLoadingComplete) {
+  //   <ActivityIndicator size="large" color={colors.primary} />;
+  // }
+  return <RootNavigation />;
+}
