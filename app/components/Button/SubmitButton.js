@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import colors from "../../config/colors";
+import { Button } from "@rneui/themed";
 
 function SubmitButton({
   title,
@@ -16,7 +17,15 @@ function SubmitButton({
   bcolor = "primary",
 }) {
   return (
-    <TouchableOpacity
+    <Button
+      buttonStyle={{
+        backgroundColor: colors.primary,
+        borderRadius: 7,
+        padding: 15,
+      }}
+      containerStyle={{
+        width: "100%",
+      }}
       disabled={disabled}
       activeOpacity={disabled ? 0.5 : 1}
       style={[
@@ -32,7 +41,7 @@ function SubmitButton({
           title
         )}
       </Text>
-    </TouchableOpacity>
+    </Button>
   );
 }
 

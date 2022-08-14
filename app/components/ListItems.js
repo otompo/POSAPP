@@ -5,14 +5,15 @@ import { Divider } from "react-native-elements";
 import { ListItem } from "@rneui/themed";
 import colors from "../config/colors";
 
-function UserListItems({
-  userName,
-  userEmail,
-  userContact,
-  userCreatedAt,
-  userGeneratedPass,
+function ListItems({
+  mainTitle,
+  title,
+  subTitle,
+  subSubTitle,
+  subSubSubTitle,
   rightContent,
   leftContent,
+  dateTitle,
   color,
   icon,
 }) {
@@ -21,40 +22,40 @@ function UserListItems({
       <ListItem.Swipeable leftContent={leftContent} rightContent={rightContent}>
         <MaterialCommunityIcons name={icon} size={25} color={color} />
         <ListItem.Content>
-          {userName && (
+          {mainTitle && (
             <ListItem.Title>
               <ListItem.Title style={styles.title}>Name:</ListItem.Title>{" "}
-              {userName}
+              {mainTitle}
             </ListItem.Title>
           )}
-          {userEmail && (
+          {title && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
                 Email:
               </ListItem.Subtitle>{" "}
-              {userEmail}
+              {title}
             </ListItem.Subtitle>
           )}
-          {userContact && (
+          {subTitle && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
                 Contact:
               </ListItem.Subtitle>{" "}
-              {userContact}
+              {subTitle}
             </ListItem.Subtitle>
           )}
           <ListItem.Subtitle>
             <ListItem.Subtitle style={styles.subTitle}>
-              JoinDate:
+              {dateTitle}:
             </ListItem.Subtitle>{" "}
-            {userCreatedAt}
+            {subSubTitle}
           </ListItem.Subtitle>
-          {!!userGeneratedPass && (
+          {!!subSubSubTitle && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
                 Generated Password:
               </ListItem.Subtitle>{" "}
-              {userGeneratedPass}
+              {subSubSubTitle}
             </ListItem.Subtitle>
           )}
         </ListItem.Content>
@@ -65,7 +66,7 @@ function UserListItems({
   );
 }
 
-export default UserListItems;
+export default ListItems;
 
 const styles = StyleSheet.create({
   container: {

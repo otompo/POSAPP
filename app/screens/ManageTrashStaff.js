@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Text,
-  ScrollView,
   RefreshControl,
   FlatList,
   ToastAndroid,
@@ -15,7 +14,7 @@ import axios from "axios";
 import colors from "../config/colors";
 import { Divider } from "react-native-elements";
 import UserFormList from "../components/UserFormList";
-import UserTrashAction from "../components/UserTrashAction";
+import ListActions from "../components/ListActions";
 import moment from "moment";
 import Header from "../components/Header";
 
@@ -126,7 +125,7 @@ function ManageTrashStaff({ navigation }) {
               userGeneratedPass={item.generatedPasword}
               userCreatedAt={`${moment(item && item.createdAt).fromNow()} `}
               renderRightActions={() => (
-                <UserTrashAction
+                <ListActions
                   bcolor="online"
                   icon={"reload"}
                   onPress={(e) => moveUserFromTrash(e, item.username)}

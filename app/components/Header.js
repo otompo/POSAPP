@@ -16,7 +16,7 @@ function Header({ navigation, HeaderTitle = "Header" }) {
     <SafeAreaView style={styles.headerMain}>
       <View style={styles.headerInner}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Icon name="menu-outline" size={28} color="#fff" />
+          {navigation && <Icon name="menu-outline" size={28} color="#fff" />}
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{HeaderTitle}</Text>
       </View>

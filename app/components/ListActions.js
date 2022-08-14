@@ -3,21 +3,22 @@ import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import colors from "../config/colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-function UserAdminAction({ onPress, bcolor = "primary", icon = "coffee" }) {
+function ListAction({ onPress, bcolor = "danger", icon }) {
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={[styles.constiner, { backgroundColor: colors[bcolor] }]}>
-        <MaterialCommunityIcons name={icon} size={30} color={colors.white} />
+        <MaterialCommunityIcons name={icon} size={40} color={colors.white} />
       </View>
     </TouchableWithoutFeedback>
   );
 }
 
-export default UserAdminAction;
+export default ListAction;
 
 const styles = StyleSheet.create({
   constiner: {
-    backgroundColor: colors.primary,
+    flexDirection: "row",
+    backgroundColor: colors.danger,
     minHeight: "100%",
     justifyContent: "center",
     alignItems: "center",

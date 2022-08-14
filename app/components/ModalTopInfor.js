@@ -22,7 +22,7 @@ function ModalTopInfor({ title, handlePress }) {
         }}
       >
         <Text style={{ fontWeight: "bold", marginLeft: 10 }}>
-          <Text style={{ color: colors.secoundary }}>+ {title}</Text>
+          <Text style={{ color: colors.secoundary }}>{title}</Text>
         </Text>
 
         <TouchableOpacity onPress={handlePress} style={{ marginRight: 10 }}>

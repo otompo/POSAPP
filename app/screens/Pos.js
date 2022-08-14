@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  ScrollView,
   View,
   StyleSheet,
   RefreshControl,
@@ -9,27 +8,26 @@ import {
   AlertIOS,
   ActivityIndicator,
   Text,
-  TouchableOpacity,
   FlatList,
 } from "react-native";
 import SubmitButton from "../components/Button/SubmitButton";
 import AppTextInput from "../components/Auth/AppTextInput";
 import ModalTopInfor from "../components/ModalTopInfor";
-import Modal from "react-native-modal";
-import Header from "../components/Header";
 import UserListItems from "../components/UserListItems";
-import moment from "moment";
-import UserTrashAction from "../components/UserTrashAction";
-import axios from "axios";
-import UserAdminAction from "../components/UserAdminAction";
+import ListActions from "../components/ListActions";
 import colors from "../config/colors";
 import { Button } from "@rneui/themed";
+import Modal from "react-native-modal";
+import Header from "../components/Header";
+import axios from "axios";
+import moment from "moment";
+
 function PosScreen({ navigation }) {
+  const [totalInactive, setTotalInactive] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [totalInactive, setTotalInactive] = useState("");
   const [contactNum, setContactNum] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -232,13 +230,9 @@ function PosScreen({ navigation }) {
             alignItems: "center",
           }}
         >
-          <TouchableOpacity
-            onPress={() => navigation.navigate("ManageTrashStaff")}
-          >
-            <Text style={{ color: colors.white, fontWeight: "500" }}>
-              {totalInactive}
-            </Text>
-          </TouchableOpacity>
+          <Text style={{ color: colors.white, fontWeight: "500" }}>
+            {totalInactive}
+          </Text>
         </View>
       </View>
       <FlatList
@@ -267,14 +261,14 @@ function PosScreen({ navigation }) {
               userGeneratedPass={item.generatedPasword}
               userCreatedAt={`${moment(item && item.createdAt).fromNow()} `}
               rightContent={(reset) => (
-                <UserTrashAction
+                <ListActions
                   icon={"delete-empty"}
                   onPress={(e) => (moveUserToTrash(e, item.username), reset())}
                 />
               )}
               leftContent={(reset) =>
                 item && item.role.includes("admin") ? (
-                  <UserAdminAction
+                  <ListActions
                     bcolor="infor"
                     icon="coffee-to-go"
                     onPress={(e) => (
@@ -282,7 +276,7 @@ function PosScreen({ navigation }) {
                     )}
                   />
                 ) : (
-                  <UserAdminAction
+                  <ListActions
                     bcolor="airblue"
                     icon="coffee"
                     onPress={(e) => (

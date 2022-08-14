@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  ScrollView,
   View,
   StyleSheet,
   RefreshControl,
@@ -8,8 +7,6 @@ import {
   Platform,
   AlertIOS,
   ActivityIndicator,
-  Text,
-  TouchableOpacity,
   FlatList,
 } from "react-native";
 import SubmitButton from "../components/Button/SubmitButton";
@@ -19,11 +16,10 @@ import Modal from "react-native-modal";
 import Header from "../components/Header";
 import UserListItems from "../components/UserListItems";
 import moment from "moment";
-import UserTrashAction from "../components/UserTrashAction";
-import axios from "axios";
-import UserAdminAction from "../components/UserAdminAction";
+import ListActions from "../components/ListActions";
+import SubHeader from "../components/SubHeader";
 import colors from "../config/colors";
-import { Button } from "@rneui/themed";
+import axios from "axios";
 
 function ManageStaff({ navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -86,7 +82,7 @@ function ManageStaff({ navigation }) {
       setContactNum("");
       setSuccess(false);
     } catch (err) {
-      console.log(err.response.data.message);
+      // console.log(err.response.data.message);
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravityAndOffset(
           err.response.data.message,
@@ -219,29 +215,13 @@ function ManageStaff({ navigation }) {
   return (
     <>
       <Header navigation={navigation} HeaderTitle="Manage Staff" />
-      <View style={styles.topContainer}>
-        <Button onPress={toggleModal} title="ADD STAFF" color="#841584" />
+      <SubHeader
+        buttonTitle="+ ADD STAFF"
+        subTitle="Total InActive"
+        data={JSON.stringify(totalInactive)}
+        onPress={toggleModal}
+      />
 
-        <Text style={styles.topText}> In active Staff</Text>
-        <View
-          style={{
-            height: 30,
-            width: 30,
-            borderRadius: 15,
-            backgroundColor: colors.primary,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {/* <TouchableOpacity
-            onPress={() => navigation.navigate("ManageTrashStaff")}
-          > */}
-          <Text style={{ color: colors.white, fontWeight: "500" }}>
-            {totalInactive}
-          </Text>
-          {/* </TouchableOpacity> */}
-        </View>
-      </View>
       <FlatList
         data={users}
         keyExtractor={(users) => users._id.toString()}
@@ -268,14 +248,14 @@ function ManageStaff({ navigation }) {
               userGeneratedPass={item.generatedPasword}
               userCreatedAt={`${moment(item && item.createdAt).fromNow()} `}
               rightContent={(reset) => (
-                <UserTrashAction
+                <ListActions
                   icon={"delete-empty"}
                   onPress={(e) => (moveUserToTrash(e, item.username), reset())}
                 />
               )}
               leftContent={(reset) =>
                 item && item.role.includes("admin") ? (
-                  <UserAdminAction
+                  <ListActions
                     bcolor="infor"
                     icon="coffee-to-go"
                     onPress={(e) => (
@@ -283,7 +263,7 @@ function ManageStaff({ navigation }) {
                     )}
                   />
                 ) : (
-                  <UserAdminAction
+                  <ListActions
                     bcolor="airblue"
                     icon="coffee"
                     onPress={(e) => (
@@ -307,11 +287,11 @@ function ManageStaff({ navigation }) {
             padding: 10,
           }}
         >
-          <ModalTopInfor title="ADD STAFF" handlePress={toggleModal} />
+          <ModalTopInfor title="+ ADD STAFF" handlePress={toggleModal} />
           <AppTextInput
             autoCapitalize="words"
             autoCorrect={false}
-            icon="pencil"
+            icon="pencil-plus"
             placeholder="Enter full name"
             value={name}
             setValue={setName}

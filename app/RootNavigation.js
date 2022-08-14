@@ -13,6 +13,7 @@ import DrawRoot from "./components/navigation/Drawer";
 import PosScreen from "./screens/Pos";
 import ManageStaff from "./screens/ManageStaff";
 import ManageTrashStaff from "./screens/ManageTrashStaff";
+import ManageEditExpenses from "./screens/ManageEditExpenses";
 // import ManageTrashStaff from "./screens/ManageTrashStaff";
 
 const Stack = createNativeStackNavigator();
@@ -134,11 +135,11 @@ function ScreensNav(props) {
             component={DrawRoot}
             options={{ headerShown: false }}
           />
-          {/* <Stack.Screen
-            name="ManageTrashStaff"
-            component={ManageTrashStaff}
+          <Stack.Screen
+            name="ManageEditExpenses"
+            component={ManageEditExpenses}
             options={{ headerShown: false }}
-          /> */}
+          />
         </>
       ) : (
         <>

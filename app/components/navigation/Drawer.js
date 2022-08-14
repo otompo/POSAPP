@@ -15,8 +15,6 @@ import ManageProducts from "../../screens/ManageProducts";
 import ManageExpenses from "../../screens/ManageExpenses";
 import ManageStaff from "../../screens/ManageStaff";
 import ManageTrashStaff from "../../screens/ManageTrashStaff";
-import { Text, View } from "react-native";
-import axios from "axios";
 
 const Drawer = createDrawerNavigator();
 function DrawRoot() {
