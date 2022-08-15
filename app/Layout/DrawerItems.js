@@ -5,6 +5,7 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../context/authContext";
 import { Divider } from "react-native-elements";
@@ -53,45 +54,74 @@ export default function DrawerItems(props) {
         style={{
           flexDirection: "row",
           margin: 0,
-          backgroundColor: "#838383",
+          backgroundColor: colors.primary,
           padding: 10,
         }}
       >
-        <Image
-          source={{
-            uri: "https://cdn.pixabay.com/photo/2022/08/04/00/51/woman-7363571_960_720.jpg",
-          }}
+        <View
           style={{
             width: 70,
             height: 70,
             borderRadius: 120,
             marginLeft: 10,
-            borderWidth: 1,
-            borderColor: "#fff",
+            borderWidth: 2,
+            borderColor: colors.white,
+            justifyContent: "center",
+            alignItems: "center",
           }}
-        />
+        >
+          <MaterialCommunityIcons
+            name="account"
+            size={38}
+            color={colors.white}
+          />
+          {/* <Image
+            source={{
+              uri: "https://cdn.pixabay.com/photo/2022/08/04/00/51/woman-7363571_960_720.jpg",
+            }}
+            style={{
+              width: 70,
+              height: 70,
+              borderRadius: 120,
+              borderWidth: 2,
+              borderColor: colors.white,
+            }}
+          /> */}
+        </View>
 
         <View>
-          <Text style={{ color: "#fff", fontSize: 14, paddingLeft: 10 }}>
-            <Text style={{ color: colors.dark, fontWeight: "500" }}>Name:</Text>
+          <Text
+            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
+          >
+            <Text style={{ color: colors.white, fontWeight: "bold" }}>
+              Name:
+            </Text>
             {name}
           </Text>
-          <Text style={{ color: "#fff", fontSize: 14, paddingLeft: 10 }}>
-            <Text style={{ color: colors.dark, fontWeight: "500" }}>
+
+          <Text
+            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
+          >
+            <Text style={{ color: colors.white, fontWeight: "bold" }}>
               Contact:
-            </Text>{" "}
+            </Text>
             {contactNum}
           </Text>
-          <Text style={{ color: "#fff", fontSize: 14, paddingLeft: 10 }}>
-            <Text style={{ color: colors.dark, fontWeight: "500" }}>
+
+          <Text
+            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
+          >
+            <Text style={{ color: colors.white, fontWeight: "bold" }}>
               Email:
             </Text>
             {email}
           </Text>
-          <Text style={{ color: "#fff", fontSize: 14, paddingLeft: 10 }}>
-            <Text style={{ color: colors.dark, fontWeight: "500" }}>
+          <Text
+            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
+          >
+            <Text style={{ color: colors.white, fontWeight: "bold" }}>
               JoinDate:
-            </Text>{" "}
+            </Text>
             {moment(`${createdAt}`).format("LL")}
           </Text>
         </View>

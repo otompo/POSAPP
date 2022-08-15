@@ -124,6 +124,11 @@ function ManageExpenses({ navigation }) {
         amount,
         expenseDate: date && date,
       });
+
+      setName("");
+      setAmount("");
+      // setModalVisible(false);
+      setSuccess(false);
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravityAndOffset(
           "success",
@@ -135,10 +140,6 @@ function ManageExpenses({ navigation }) {
       } else {
         AlertIOS.alert("success");
       }
-      setName("");
-      setAmount("");
-      // setModalVisible(false);
-      setSuccess(false);
     } catch (err) {
       console.log(err);
 
@@ -231,6 +232,7 @@ function ManageExpenses({ navigation }) {
             }}
           >
             <ListItems
+              titleText="Amount"
               dateTitle="Date"
               mainTitle={item.name}
               title={FormatCurrency(Number(item.amount))}
@@ -311,7 +313,7 @@ function ManageExpenses({ navigation }) {
                     borderBottomWidth: 0.5,
                     height: 50,
                     width: "80%",
-                    borderBottomColor: "#8e993a",
+                    borderBottomColor: colors.primary,
                     borderRadius: 2,
                   }}
                   value={getDate()}
@@ -327,6 +329,7 @@ function ManageExpenses({ navigation }) {
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
+                maximumDate={new Date()}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
               />
@@ -367,7 +370,6 @@ function ManageExpenses({ navigation }) {
                     borderBottomColor: colors.primary,
                     borderRadius: 2,
                   }}
-                  dateFormat="MMMM d, yyyy"
                   value={
                     moment(dates).format("ddd LL")
                       ? moment(expensesDate).format("ddd LL")
@@ -385,6 +387,7 @@ function ManageExpenses({ navigation }) {
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
+                maximumDate={new Date()}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
               />

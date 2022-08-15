@@ -11,10 +11,14 @@ import Icon from "react-native-vector-icons/Ionicons";
 import colors from "../config/colors";
 var { width } = Dimensions.get("window");
 
-function Header({ navigation, HeaderTitle = "Header" }) {
+function Header({
+  navigation,
+  HeaderTitle = "Header",
+  justifyContent = "space-between",
+}) {
   return (
     <SafeAreaView style={styles.headerMain}>
-      <View style={styles.headerInner}>
+      <View style={[styles.headerInner, { justifyContent: justifyContent }]}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
           {navigation && <Icon name="menu-outline" size={28} color="#fff" />}
         </TouchableOpacity>

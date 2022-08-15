@@ -97,7 +97,7 @@ function ManageEditExpenses({ route, navigation }) {
 
   return (
     <>
-      <Header HeaderTitle={responseData.name} />
+      <Header HeaderTitle={responseData.name} justifyContent="center" />
       <View style={styles.MainContainer}>
         <View style={styles.titleContainer}>
           <MaterialCommunityIcons name="pencil" size={40} color={colors.dark} />

@@ -105,12 +105,13 @@ function ManageCategories({ navigation }) {
 
   const handleDelete = async (index) => {
     try {
-      setSuccess(true);
+      setLoading(true);
 
       let allCategories = categories;
       const removed = allCategories.splice(index, 1);
       setCategories(allCategories);
       const { data } = axios.delete(`/api/admin/category/${removed[0]._id}`);
+      setLoading(false);
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravityAndOffset(
           "success",
@@ -122,7 +123,6 @@ function ManageCategories({ navigation }) {
       } else {
         AlertIOS.alert("success");
       }
-      setSuccess(false);
     } catch (err) {
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravityAndOffset(
@@ -135,7 +135,7 @@ function ManageCategories({ navigation }) {
       } else {
         AlertIOS.alert(err);
       }
-      setSuccess(false);
+      setLoading(false);
     }
   };
 

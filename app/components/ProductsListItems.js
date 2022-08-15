@@ -5,18 +5,18 @@ import { Divider } from "react-native-elements";
 import { ListItem } from "@rneui/themed";
 import colors from "../config/colors";
 
-function ListItems({
+function ProductsListItems({
   mainTitle,
-  title,
-  subTitle,
-  subSubTitle,
-  subSubSubTitle,
-  rightContent,
-  leftContent,
-  dateTitle,
+  category,
+  quantity,
+  costPrice,
+  sellingPrice,
+  expiredDate,
+  createdAt,
   color,
   icon,
-  titleText = "Email",
+  rightContent,
+  leftContent,
 }) {
   return (
     <>
@@ -29,34 +29,54 @@ function ListItems({
               {mainTitle}
             </ListItem.Title>
           )}
-          {title && (
+          {category && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
-                {titleText}:
+                Category:
               </ListItem.Subtitle>{" "}
-              {title}
+              {category}
             </ListItem.Subtitle>
           )}
-          {subTitle && (
+          {quantity && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
-                Contact:
+                Quantity:
               </ListItem.Subtitle>{" "}
-              {subTitle}
+              {quantity}
             </ListItem.Subtitle>
           )}
-          <ListItem.Subtitle>
-            <ListItem.Subtitle style={styles.subTitle}>
-              {dateTitle}:
-            </ListItem.Subtitle>{" "}
-            {subSubTitle}
-          </ListItem.Subtitle>
-          {!!subSubSubTitle && (
+
+          {costPrice && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
-                Generated Password:
+                Cost Price:
               </ListItem.Subtitle>{" "}
-              {subSubSubTitle}
+              {costPrice}
+            </ListItem.Subtitle>
+          )}
+
+          {!!sellingPrice && (
+            <ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.subTitle}>
+                Selling Price:
+              </ListItem.Subtitle>{" "}
+              {sellingPrice}
+            </ListItem.Subtitle>
+          )}
+          {expiredDate && (
+            <ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.subTitle}>
+                Expired Date:
+              </ListItem.Subtitle>{" "}
+              {expiredDate}
+            </ListItem.Subtitle>
+          )}
+          {createdAt && (
+            <ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.subTitle}>
+                Created At:
+              </ListItem.Subtitle>{" "}
+              {createdAt}
             </ListItem.Subtitle>
           )}
         </ListItem.Content>
@@ -67,7 +87,7 @@ function ListItems({
   );
 }
 
-export default ListItems;
+export default ProductsListItems;
 
 const styles = StyleSheet.create({
   container: {

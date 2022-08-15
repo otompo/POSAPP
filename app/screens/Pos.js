@@ -213,6 +213,7 @@ function PosScreen({ navigation }) {
   //     </View>
   //   );
   // }
+
   return (
     <>
       <Header navigation={navigation} HeaderTitle="POS" />

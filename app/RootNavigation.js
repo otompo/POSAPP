@@ -14,6 +14,11 @@ import PosScreen from "./screens/Pos";
 import ManageStaff from "./screens/ManageStaff";
 import ManageTrashStaff from "./screens/ManageTrashStaff";
 import ManageEditExpenses from "./screens/ManageEditExpenses";
+import ManageProductsInstock from "./screens/ManageProductsInstock";
+import ManageExpiredProducts from "./screens/ManageExpiredProducts";
+import ManageProductsAboutToExpire from "./screens/ManageProductsAboutToExpire";
+import ManageProductOutOfStock from "./screens/ManageProductOutOfStock";
+import ManageProductsAboutOutOfStock from "./screens/ManageProductsAboutOutOfStock";
 // import ManageTrashStaff from "./screens/ManageTrashStaff";
 
 const Stack = createNativeStackNavigator();
@@ -138,6 +143,31 @@ function ScreensNav(props) {
           <Stack.Screen
             name="ManageEditExpenses"
             component={ManageEditExpenses}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManageProductsInstock"
+            component={ManageProductsInstock}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManageExpiredProducts"
+            component={ManageExpiredProducts}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManageProductsAboutToExpire"
+            component={ManageProductsAboutToExpire}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManageProductOutOfStock"
+            component={ManageProductOutOfStock}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManageProductsAboutOutOfStock"
+            component={ManageProductsAboutOutOfStock}
             options={{ headerShown: false }}
           />
         </>

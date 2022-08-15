@@ -3,15 +3,15 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import colors from "../config/colors";
 import { Button } from "@rneui/themed";
 
-function SubHeader({ buttonTitle, subTitle, onPress, data }) {
+function SubHeader({ buttonTitle, subTitle, onPress, data, proWidth = true }) {
   return (
     <View style={styles.topContainer}>
       <Button
         onPress={onPress}
         title={buttonTitle}
         containerStyle={{
-          width: 200,
-          marginHorizontal: data ? 15 : 90,
+          width: data ? 200 : proWidth ? 340 : 200,
+          marginHorizontal: data ? 15 : proWidth ? 15 : 90,
         }}
         buttonStyle={{
           backgroundColor: colors.primary,
