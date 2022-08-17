@@ -23,12 +23,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../context/authContext";
 import Header from "../components/Header";
 // import { Avatar } from "react-native-paper";
-// import ListItem from "../components/ListItem";
-// import moment from "moment";
+import moment from "moment";
+
 const TopTabNavigator = createMaterialTopTabNavigator();
 
 function AccountScreen({ navigation }) {
-  const [state, setState] = useContext(AuthContext);
+  const [auth, setAuth] = useContext(AuthContext);
   const [uploadImage, setUploadImage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,14 +37,14 @@ function AccountScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (state.user) {
-      const { name, contactNum, email } = state && state.user;
+    if (auth.user) {
+      const { name, contactNum, email } = auth && auth.user;
       setName(name);
       setContactNum(contactNum);
       setEmail(email);
       // setImage(profle_image);
     }
-  }, []);
+  }, [auth]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -55,14 +55,15 @@ function AccountScreen({ navigation }) {
         contactNum,
       });
 
-      const as = JSON.parse(await AsyncStorage.getItem("@auth"));
+      if (auth?.user?._id === data._id) {
+        setAuth({ ...auth, user: data });
+        let fromLocalStorage = JSON.parse(await AsyncStorage.getItem("@auth"));
+        // console.log("First", fromLocalStorage);
+        fromLocalStorage.user = data;
+        await AsyncStorage.setItem("@auth", JSON.stringify(fromLocalStorage));
+        // console.log("SEC", fromLocalStorage);
+      }
 
-      as.user = data;
-      const prepData = { user: data, token: data.token };
-      await AsyncStorage.setItem("@auth", JSON.stringify(prepData));
-      setState(prepData);
-      // update  constext
-      setState({ ...state, user: data });
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravityAndOffset(
           "Success",
@@ -168,6 +169,7 @@ function AccountScreen({ navigation }) {
             </TouchableOpacity>
           )}
         </CircleLogo>
+
         <View style={{ marginHorizontal: 30 }}>
           <AppTextInput
             autoCapitalize="words"

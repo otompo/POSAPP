@@ -221,6 +221,7 @@ function PosScreen({ navigation }) {
         <Button onPress={toggleModal} title="ADD STAFF" color="#841584" />
 
         <Text style={styles.topText}> In active Staff</Text>
+
         <View
           style={{
             height: 30,

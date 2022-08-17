@@ -167,7 +167,8 @@ function ManageCategories({ navigation }) {
             }}
           >
             <ListItems
-              dateTitle="Created Date"
+              mainTitleText="Name:"
+              dateTitle="Created Date:"
               mainTitle={item.name}
               subSubTitle={`${moment(item && item.createdAt).format("LL")} `}
               rightContent={(reset) => (

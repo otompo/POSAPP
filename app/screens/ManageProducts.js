@@ -489,7 +489,7 @@ function ManageProducts({ navigation }) {
                   category={
                     product &&
                     product.category &&
-                    product.category.map((c, i) => `${c && c.name}, `)
+                    product.category.map((c, i) => `${c && c.name} `)
                   }
                   quantity={product.quantity}
                   costPrice={FormatCurrency(Number(product.costPrice))}
@@ -572,7 +572,7 @@ function ManageProducts({ navigation }) {
                 category={
                   item &&
                   item.category &&
-                  item.category.map((c, i) => `${c && c.name}, `)
+                  item.category.map((c, i) => `${c && c.name} `)
                 }
                 quantity={item.quantity}
                 costPrice={FormatCurrency(Number(item.costPrice))}
@@ -835,13 +835,13 @@ function ManageProducts({ navigation }) {
                   <Text style={styles.text}>Date</Text>
                 </TouchableOpacity>
               </View>
-              <Text style={styles.labelText}>Select Category</Text>
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
               />
+              <Text style={styles.labelText}>Select Category</Text>
               <Dropdown
                 style={styles.dropdown}
                 placeholderStyle={styles.placeholderStyle}

@@ -3,9 +3,21 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import colors from "../config/colors";
 import { Button } from "@rneui/themed";
 
-function SubHeader({ buttonTitle, subTitle, onPress, data, proWidth = true }) {
+function SubHeader({
+  buttonTitle,
+  subTitle,
+  onPress,
+  data,
+  proWidth = true,
+  backgroundColor = "toolbar",
+}) {
   return (
-    <View style={styles.topContainer}>
+    <View
+      style={[
+        styles.topContainer,
+        { backgroundColor: colors[backgroundColor] },
+      ]}
+    >
       <Button
         onPress={onPress}
         title={buttonTitle}

@@ -17,22 +17,31 @@ function ListItems({
   color,
   icon,
   titleText = "Email",
+  ContactText = "Contact",
+  mainTitleText,
+  chevronActive = true,
+  iconActive = true,
 }) {
   return (
     <>
       <ListItem.Swipeable leftContent={leftContent} rightContent={rightContent}>
-        <MaterialCommunityIcons name={icon} size={25} color={color} />
+        {iconActive && (
+          <MaterialCommunityIcons name={icon} size={25} color={color} />
+        )}
+
         <ListItem.Content>
           {mainTitle && (
             <ListItem.Title>
-              <ListItem.Title style={styles.title}>Name:</ListItem.Title>{" "}
+              <ListItem.Title style={styles.title}>
+                {mainTitleText}
+              </ListItem.Title>{" "}
               {mainTitle}
             </ListItem.Title>
           )}
           {title && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
-                {titleText}:
+                {titleText}
               </ListItem.Subtitle>{" "}
               {title}
             </ListItem.Subtitle>
@@ -40,14 +49,14 @@ function ListItems({
           {subTitle && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
-                Contact:
+                {ContactText}
               </ListItem.Subtitle>{" "}
               {subTitle}
             </ListItem.Subtitle>
           )}
           <ListItem.Subtitle>
             <ListItem.Subtitle style={styles.subTitle}>
-              {dateTitle}:
+              {dateTitle}
             </ListItem.Subtitle>{" "}
             {subSubTitle}
           </ListItem.Subtitle>
@@ -60,7 +69,7 @@ function ListItems({
             </ListItem.Subtitle>
           )}
         </ListItem.Content>
-        <ListItem.Chevron size={35} />
+        {chevronActive && <ListItem.Chevron size={35} />}
       </ListItem.Swipeable>
       <Divider width={1} />
     </>

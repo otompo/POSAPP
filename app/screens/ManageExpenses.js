@@ -232,8 +232,9 @@ function ManageExpenses({ navigation }) {
             }}
           >
             <ListItems
-              titleText="Amount"
-              dateTitle="Date"
+              mainTitleText="Name:"
+              titleText="Amount:"
+              dateTitle="Date:"
               mainTitle={item.name}
               title={FormatCurrency(Number(item.amount))}
               subSubTitle={`${moment(item && item.date).format("ddd LL")} `}

@@ -90,40 +90,32 @@ export default function DrawerItems(props) {
         </View>
 
         <View>
-          <Text
-            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
-          >
-            <Text style={{ color: colors.white, fontWeight: "bold" }}>
+          <Text style={{ color: colors.white, fontSize: 14, paddingLeft: 10 }}>
+            <Text style={{ color: colors.white, fontWeight: "300" }}>
               Name:
             </Text>
             {name}
           </Text>
 
-          <Text
-            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
-          >
-            <Text style={{ color: colors.white, fontWeight: "bold" }}>
+          <Text style={{ color: colors.white, fontSize: 14, paddingLeft: 10 }}>
+            <Text style={{ color: colors.white, fontWeight: "300" }}>
               Contact:
             </Text>
             {contactNum}
           </Text>
 
-          <Text
-            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
-          >
-            <Text style={{ color: colors.white, fontWeight: "bold" }}>
+          <Text style={{ color: colors.white, fontSize: 14, paddingLeft: 10 }}>
+            <Text style={{ color: colors.white, fontWeight: "300" }}>
               Email:
             </Text>
             {email}
           </Text>
-          <Text
-            style={{ color: colors.airblue, fontSize: 14, paddingLeft: 10 }}
-          >
-            <Text style={{ color: colors.white, fontWeight: "bold" }}>
+          {/* <Text style={{ color: colors.white, fontSize: 14, paddingLeft: 10 }}>
+            <Text style={{ color: colors.white, fontWeight: "300" }}>
               JoinDate:
             </Text>
             {moment(`${createdAt}`).format("LL")}
-          </Text>
+          </Text> */}
         </View>
       </View>
       <DrawerContentScrollView {...props}>

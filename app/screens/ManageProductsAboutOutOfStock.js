@@ -6,7 +6,7 @@ function ManageProductsAboutOutOfStock(props) {
   return (
     <>
       <Header
-        HeaderTitle="ProductAbout to OutOf Stock"
+        HeaderTitle="Products About to OutOf Stock"
         justifyContent="center"
       />
       <Text>Products Instock</Text>
