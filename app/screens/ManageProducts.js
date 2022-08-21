@@ -6,7 +6,6 @@ import {
   ToastAndroid,
   Platform,
   AlertIOS,
-  ActivityIndicator,
   Text,
   FlatList,
   ScrollView,
@@ -18,6 +17,7 @@ import SubmitButton from "../components/Button/SubmitButton";
 import AppTextInput from "../components/Auth/AppTextInput";
 import ModalTopInfor from "../components/ModalTopInfor";
 import ProductsListItems from "../components/ProductsListItems";
+import ListItems from "../components/ListItems";
 import ListActions from "../components/ListActions";
 import colors from "../config/colors";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -351,6 +351,7 @@ function ManageProducts({ navigation }) {
       setQuantity("");
     }
   };
+
   const handleUpdateSubmit = async () => {
     if (selectedCategory.length === 0) {
       try {
@@ -478,26 +479,40 @@ function ManageProducts({ navigation }) {
         <>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            style={{ backgroundColor: colors.danger }}
+            // style={{ backgroundColor: colors.danger }}
           >
             {products.length > 0 ? (
               products.filter(searched(keyword)).map((product, index) => (
-                <ProductsListItems
+                <ListItems
                   key={index}
+                  chevronActive={true}
+                  iconActive={true}
                   icon="cog"
+                  mainTitleText="Name:"
+                  titleText="Category:"
+                  subTitleText="Quantity:"
+                  subSubTitleText="Cost Price:"
+                  subSubSubTitleText="Selling Price:"
+                  subSubSubSubTitleText="Expired Date:"
+                  subSubSubSubSubTitleText="CreatedAt:"
                   mainTitle={product.name}
+                  subTitle={`${product.quantity}`}
+                  subSubTitle={FormatCurrency(Number(product.costPrice))}
+                  subSubSubTitle={FormatCurrency(Number(product.sellingPrice))}
                   category={
                     product &&
                     product.category &&
                     product.category.map((c, i) => `${c && c.name} `)
                   }
-                  quantity={product.quantity}
-                  costPrice={FormatCurrency(Number(product.costPrice))}
-                  sellingPrice={FormatCurrency(Number(product.sellingPrice))}
-                  expiredDate={`${moment(
+                  title={
+                    product &&
+                    product.category &&
+                    product.category.map((c, i) => `${c && c.name}`)
+                  }
+                  subSubSubSubTitle={`${moment(
                     product && product.expireDate
-                  ).fromNow()} `}
-                  createdAt={`${moment(product && product.createdAt).format(
+                  ).format("LL")} `}
+                  subSubSubSubSubTitle={`${moment(product.createdAt).format(
                     "LL"
                   )} `}
                   rightContent={(reset) => (
@@ -509,7 +524,7 @@ function ManageProducts({ navigation }) {
                   leftContent={(reset) => (
                     <>
                       <ListActions
-                        minHeight="50%"
+                        minHeight="100%"
                         bcolor="airblue"
                         icon="pencil"
                         onPress={() => {
@@ -517,18 +532,6 @@ function ManageProducts({ navigation }) {
                           setCurrent(product);
                           setModalVisible(true);
                           setActionTriggered("ACTION_2");
-                          reset();
-                        }}
-                      />
-                      <ListActions
-                        minHeight="50%"
-                        bcolor="online"
-                        icon="reload"
-                        onPress={() => {
-                          // navigation.navigate("ManageEditExpenses", item);
-                          setCurrent(product);
-                          setModalVisible(true);
-                          setActionTriggered("ACTION_3");
                           reset();
                         }}
                       />
@@ -566,19 +569,30 @@ function ManageProducts({ navigation }) {
                 marginBottom: 5,
               }}
             >
-              <ProductsListItems
+              <ListItems
+                chevronActive={true}
+                iconActive={true}
                 icon="cog"
+                mainTitleText="Name:"
+                titleText="Category:"
+                subTitleText="Quantity:"
+                subSubTitleText="Cost Price:"
+                subSubSubTitleText="Selling Price:"
+                subSubSubSubTitleText="Expired Date:"
+                subSubSubSubSubTitleText="CreatedAt:"
                 mainTitle={item.name}
-                category={
+                subTitle={`${item.quantity}`}
+                subSubTitle={FormatCurrency(Number(item.costPrice))}
+                subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+                title={
                   item &&
                   item.category &&
-                  item.category.map((c, i) => `${c && c.name} `)
+                  item.category.map((c, i) => `${c && c.name}`)
                 }
-                quantity={item.quantity}
-                costPrice={FormatCurrency(Number(item.costPrice))}
-                sellingPrice={FormatCurrency(Number(item.sellingPrice))}
-                expiredDate={`${moment(item && item.expireDate).fromNow()} `}
-                createdAt={`${moment(item && item.createdAt).format("LL")} `}
+                subSubSubSubTitle={`${moment(item && item.expireDate).format(
+                  "LL"
+                )} `}
+                subSubSubSubSubTitle={`${moment(item.createdAt).format("LL")} `}
                 rightContent={(reset) => (
                   <ListActions
                     icon={"delete-empty"}
@@ -588,7 +602,7 @@ function ManageProducts({ navigation }) {
                 leftContent={(reset) => (
                   <>
                     <ListActions
-                      minHeight="50%"
+                      minHeight="100%"
                       bcolor="airblue"
                       icon="pencil"
                       onPress={() => {
@@ -599,17 +613,17 @@ function ManageProducts({ navigation }) {
                         reset();
                       }}
                     />
-                    <ListActions
-                      minHeight="50%"
-                      bcolor="online"
-                      icon="reload"
-                      onPress={() => {
-                        setCurrent(item);
-                        setModalVisible(true);
-                        setActionTriggered("ACTION_3");
-                        reset();
-                      }}
-                    />
+                    {/* <ListActions
+                    minHeight="50%"
+                    bcolor="online"
+                    icon="reload"
+                    onPress={() => {
+                      setCurrent(item);
+                      setModalVisible(true);
+                      setActionTriggered("ACTION_3");
+                      reset();
+                    }}
+                  /> */}
                   </>
                 )}
               />
@@ -635,7 +649,7 @@ function ManageProducts({ navigation }) {
                 >
                   + ADD PRODUCT
                 </Text>
-              ) : actionTriggered === "ACTION_2" ? (
+              ) : (
                 <Text
                   style={{ textTransform: "uppercase", color: colors.primary }}
                 >
@@ -646,24 +660,6 @@ function ManageProducts({ navigation }) {
                   />
                   {current.name}
                 </Text>
-              ) : (
-                <>
-                  <View>
-                    <Text
-                      style={{
-                        textTransform: "uppercase",
-                        color: colors.primary,
-                      }}
-                    >
-                      <MaterialCommunityIcons
-                        name="reload"
-                        size={20}
-                        color={colors.dark}
-                      />
-                      Restock {current.name}
-                    </Text>
-                  </View>
-                </>
               )
             }
             handlePress={toggleModal}
@@ -768,7 +764,7 @@ function ManageProducts({ navigation }) {
                 loading={loading}
               />
             </>
-          ) : actionTriggered === "ACTION_2" ? (
+          ) : (
             <>
               <Text style={styles.labelText}>Product Name</Text>
               <AppTextInput
@@ -788,6 +784,7 @@ function ManageProducts({ navigation }) {
                 keyboardType="numeric"
                 value={`${newQuantity}`}
                 setValue={setNewQuantity}
+                editable={false}
               />
               <Text style={styles.labelText}>Product Cost Price</Text>
               <AppTextInput
@@ -872,35 +869,6 @@ function ManageProducts({ navigation }) {
               <SubmitButton
                 title="Update"
                 onPress={handleUpdateSubmit}
-                loading={loading}
-              />
-            </>
-          ) : (
-            <>
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: colors.dark,
-                  marginBottom: 10,
-                  marginHorizontal: 20,
-                }}
-              >
-                Current Quantity is {current.quantity}
-              </Text>
-
-              <AppTextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                icon="rhombus-split"
-                placeholder="Enter Quantity"
-                keyboardType="numeric"
-                value={newQuantity}
-                setValue={setNewQuantity}
-              />
-
-              <SubmitButton
-                title="Restock"
-                onPress={handleRestockSubmit}
                 loading={loading}
               />
             </>

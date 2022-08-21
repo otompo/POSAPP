@@ -12,6 +12,7 @@ function AppTextInput({
   autoCapitalize = "none",
   keyboardType = "default",
   secureTextEntry = false,
+  editable = true,
   width = "100%",
 }) {
   return (
@@ -28,10 +29,11 @@ function AppTextInput({
         placeholderTextColor={defaultStyles.colors.medium}
         style={defaultStyles.text}
         placeholder={placeholder}
+        editable={editable}
         autoCorrect={false}
-        autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
+        autoCapitalize={autoCapitalize}
         value={value}
         onChangeText={(text) => setValue(text)}
       />

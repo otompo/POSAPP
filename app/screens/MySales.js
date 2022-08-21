@@ -16,7 +16,6 @@ import SubHeader from "../components/SubHeader";
 import DatePicker from "../components/DatePicker/DatePicker";
 import ProductsListItems from "../components/ProductsListItems";
 import FormatCurrency from "../helpers/FormatCurrency";
-import { Divider } from "react-native-elements";
 import ListItems from "../components/ListItems";
 var { width } = Dimensions.get("window");
 
@@ -102,7 +101,8 @@ function MySales({ navigation }) {
                 item.products &&
                 item.products.map((product, i) => (
                   <>
-                    <View style={{ flexDirection: "column" }}>
+                    <View style={{ flexDirection: "row" }}>
+                      {/* <Text>{i + 1}</Text> */}
                       <Text style={{ color: colors.infor }}>
                         {product && product.name}
                         {", "}
@@ -133,11 +133,13 @@ function MySales({ navigation }) {
                 ))
               }
               titleText="Grand Amount:"
-              dateTitle="CreatedAt:"
+              subSubTitleText="CreatedAt:"
               title={FormatCurrency(Number(item.grandTotal))}
               subTitle={item.paymentMethod}
-              ContactText="Payment Method:"
-              subSubTitle={`${moment(item && item.createdAt).format("LL")} `}
+              subTitleText="Payment Method:"
+              subSubTitle={`${moment(item && item.createdAt).format(
+                "ddd LL"
+              )} `}
               // rightContent={(reset) => (
               //   <ListActions
               //     icon={"delete-empty"}

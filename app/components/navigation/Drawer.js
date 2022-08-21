@@ -15,6 +15,11 @@ import ManageProducts from "../../screens/ManageProducts";
 import ManageExpenses from "../../screens/ManageExpenses";
 import ManageStaff from "../../screens/ManageStaff";
 import ManageTrashStaff from "../../screens/ManageTrashStaff";
+import ManageDailySales from "../../screens/ManageDailySales";
+import ManageUserDailySales from "../../screens/ManageUserDailySales";
+import ManageStatistics from "../../screens/ManageStatistics";
+import ManageReports from "../../screens/ManageReports";
+import ManagePurchase from "../../screens/ManagePurchase";
 
 const Drawer = createDrawerNavigator();
 function DrawRoot() {
@@ -105,6 +110,76 @@ function DrawRoot() {
           <Drawer.Screen
             name="Manage Products"
             component={ManageProducts}
+            options={{
+              drawerIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="dolly"
+                  size={25}
+                  style={{ marginBottom: 3, alignSelf: "center" }}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Purchase Products"
+            component={ManagePurchase}
+            options={{
+              drawerIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="dolly"
+                  size={25}
+                  style={{ marginBottom: 3, alignSelf: "center" }}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Manage Daily Sales"
+            component={ManageDailySales}
+            options={{
+              drawerIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="dolly"
+                  size={25}
+                  style={{ marginBottom: 3, alignSelf: "center" }}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Manage User Daily Sales"
+            component={ManageUserDailySales}
+            options={{
+              drawerIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="dolly"
+                  size={25}
+                  style={{ marginBottom: 3, alignSelf: "center" }}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Manage Reports"
+            component={ManageReports}
+            options={{
+              drawerIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="dolly"
+                  size={25}
+                  style={{ marginBottom: 3, alignSelf: "center" }}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Manage Statistics"
+            component={ManageStatistics}
             options={{
               drawerIcon: ({ color }) => (
                 <MaterialCommunityIcons

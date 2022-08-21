@@ -13,11 +13,16 @@ function ListItems({
   subSubSubTitle,
   rightContent,
   leftContent,
-  dateTitle,
+  subSubTitleText,
+  subSubSubTitleText,
+  subSubSubSubTitleText,
+  subSubSubSubTitle,
+  subSubSubSubSubTitle,
+  subSubSubSubSubTitleText,
   color,
   icon,
-  titleText = "Email",
-  ContactText = "Contact",
+  titleText,
+  subTitleText,
   mainTitleText,
   chevronActive = true,
   iconActive = true,
@@ -49,23 +54,41 @@ function ListItems({
           {subTitle && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
-                {ContactText}
+                {subTitleText}
               </ListItem.Subtitle>{" "}
               {subTitle}
             </ListItem.Subtitle>
           )}
-          <ListItem.Subtitle>
-            <ListItem.Subtitle style={styles.subTitle}>
-              {dateTitle}
-            </ListItem.Subtitle>{" "}
-            {subSubTitle}
-          </ListItem.Subtitle>
+          {subSubTitle && (
+            <ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.subTitle}>
+                {subSubTitleText}
+              </ListItem.Subtitle>{" "}
+              {subSubTitle}
+            </ListItem.Subtitle>
+          )}
           {!!subSubSubTitle && (
             <ListItem.Subtitle>
               <ListItem.Subtitle style={styles.subTitle}>
-                Generated Password:
+                {subSubSubTitleText}
               </ListItem.Subtitle>{" "}
               {subSubSubTitle}
+            </ListItem.Subtitle>
+          )}
+          {!!subSubSubSubTitle && (
+            <ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.subTitle}>
+                {subSubSubSubTitleText}
+              </ListItem.Subtitle>{" "}
+              {subSubSubSubTitle}
+            </ListItem.Subtitle>
+          )}
+          {!!subSubSubSubSubTitle && (
+            <ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.subTitle}>
+                {subSubSubSubSubTitleText}
+              </ListItem.Subtitle>{" "}
+              {subSubSubSubSubTitle}
             </ListItem.Subtitle>
           )}
         </ListItem.Content>
