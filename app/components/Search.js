@@ -48,6 +48,7 @@ export default Search;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.toolbar,
+    height: 70,
   },
   InputContainer: {
     paddingHorizontal: 20,

@@ -3,12 +3,40 @@ import { Divider } from "react-native-elements";
 import { View, StyleSheet, Text } from "react-native";
 import colors from "../config/colors";
 
-function AdminCards({ title, data }) {
+function AdminCards({
+  title,
+  data,
+  fontSize = 20,
+  backgroundColor = "white",
+  fcolor = "dark",
+  dataColor = "primary",
+  fontWeight,
+  paddingVertical = 15,
+}) {
   return (
-    <View style={styles.questionCard}>
-      <Text style={styles.cardTextTitle}>{title}</Text>
+    <View
+      style={[
+        styles.questionCard,
+        { backgroundColor: colors[backgroundColor] },
+      ]}
+    >
+      <Text
+        style={[
+          styles.cardTextTitle,
+          {
+            color: colors[fcolor],
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            paddingVertical: paddingVertical,
+          },
+        ]}
+      >
+        {title}
+      </Text>
       <Divider />
-      <Text style={styles.cardText}>{data}</Text>
+      <Text style={[styles.cardText, { color: colors[dataColor] }]}>
+        {data}
+      </Text>
     </View>
   );
 }
@@ -17,7 +45,6 @@ export default AdminCards;
 
 const styles = StyleSheet.create({
   questionCard: {
-    paddingVertical: 15,
     margin: 5,
     borderRadius: 5,
     backgroundColor: colors.white,

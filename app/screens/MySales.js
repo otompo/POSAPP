@@ -14,7 +14,6 @@ import moment from "moment";
 import axios from "axios";
 import SubHeader from "../components/SubHeader";
 import DatePicker from "../components/DatePicker/DatePicker";
-import ProductsListItems from "../components/ProductsListItems";
 import FormatCurrency from "../helpers/FormatCurrency";
 import ListItems from "../components/ListItems";
 var { width } = Dimensions.get("window");
@@ -74,13 +73,14 @@ function MySales({ navigation }) {
       </View>
 
       <SubHeader
+        loading={loading}
         buttonTitle="Submit"
         onPress={handleSalesSubmit}
         backgroundColor="airblue"
       />
       <FlatList
         data={sales}
-        keyExtractor={(sale) => sale._id.toString()}
+        keyExtractor={(sale, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

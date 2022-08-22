@@ -19,6 +19,8 @@ function ListItems({
   subSubSubSubTitle,
   subSubSubSubSubTitle,
   subSubSubSubSubTitleText,
+  subSubSubSubSubSubTitle,
+  subSubSubSubSubSubTitleText,
   color,
   icon,
   titleText,
@@ -89,6 +91,14 @@ function ListItems({
                 {subSubSubSubSubTitleText}
               </ListItem.Subtitle>{" "}
               {subSubSubSubSubTitle}
+            </ListItem.Subtitle>
+          )}
+          {!!subSubSubSubSubSubTitle && (
+            <ListItem.Subtitle>
+              <ListItem.Subtitle style={styles.subTitle}>
+                {subSubSubSubSubSubTitleText}
+              </ListItem.Subtitle>{" "}
+              {subSubSubSubSubSubTitle}
             </ListItem.Subtitle>
           )}
         </ListItem.Content>

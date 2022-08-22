@@ -1,200 +1,84 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   RefreshControl,
-  ToastAndroid,
-  Platform,
-  AlertIOS,
-  ActivityIndicator,
-  Text,
   FlatList,
+  ScrollView,
+  Keyboard,
 } from "react-native";
-import SubmitButton from "../components/Button/SubmitButton";
-import AppTextInput from "../components/Auth/AppTextInput";
-import ModalTopInfor from "../components/ModalTopInfor";
-import UserListItems from "../components/UserListItems";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ListActions from "../components/ListActions";
-import colors from "../config/colors";
-import { Button } from "@rneui/themed";
-import Modal from "react-native-modal";
 import Header from "../components/Header";
 import axios from "axios";
-import moment from "moment";
+import Search from "../components/Search";
+import ListItems from "../components/ListItems";
+import FormatCurrency from "../helpers/FormatCurrency";
+import SubmitButton from "../components/Button/SubmitButton";
+import { CartContext } from "../context/cartContext";
+import { addToCart } from "../actions/Actions";
 
 function PosScreen({ navigation }) {
-  const [totalInactive, setTotalInactive] = useState("");
-  const [isModalVisible, setModalVisible] = useState(false);
+  const { stateData, dispatch } = useContext(CartContext);
+  const { cart } = stateData;
+  const [productsSearch, setProductsSearch] = useState([]);
+  const [productsCount, setProductsCount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [contactNum, setContactNum] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [users, setUsers] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const [page, setPage] = useState(1);
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+  const searched = (keyword) => (item) => {
+    return item.name.toLowerCase().includes(keyword.toLowerCase());
+  };
+
+  const handlePress = () => {
+    setKeyword("");
+    Keyboard.dismiss();
   };
 
   useEffect(() => {
-    loadAllUsers();
-    getTotalUsersInActive();
-  }, [success]);
+    loadProducts();
+    loadProductsSearch();
+    loadProductsCount();
+  }, []);
 
-  const handleSubmit = async (e) => {
-    if (!name || !email || !contactNum) {
-      if (Platform.OS === "android") {
-        ToastAndroid.showWithGravityAndOffset(
-          "All fields are required",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          25,
-          50
-        );
-      } else {
-        AlertIOS.alert("All fields are required");
-      }
-
-      return;
-    }
-    try {
-      setSuccess(true);
-      const { data } = await axios.post(`/api/admin/users`, {
-        name,
-        email,
-        contactNum,
-      });
-
-      if (Platform.OS === "android") {
-        ToastAndroid.showWithGravityAndOffset(
-          "success",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          25,
-          50
-        );
-      } else {
-        AlertIOS.alert("success");
-      }
-      setModalVisible(false);
-      setName("");
-      setEmail("");
-      setContactNum("");
-      setSuccess(false);
-    } catch (err) {
-      console.log(err.response.data.message);
-      if (Platform.OS === "android") {
-        ToastAndroid.showWithGravityAndOffset(
-          err.response.data.message,
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          25,
-          50
-        );
-      } else {
-        AlertIOS.alert(err.response.data.message);
-      }
-      setSuccess(false);
-    }
-  };
-
-  const loadAllUsers = async () => {
+  const loadProductsSearch = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`/api/admin/users`);
-      setUsers(data);
+      const { data } = await axios.get(`/api/admin/products`);
+      setProductsSearch(data.products);
       setLoading(false);
     } catch (err) {
       console.log(err);
       setLoading(false);
     }
   };
-  const getTotalUsersInActive = async () => {
+  const loadProducts = async () => {
     try {
-      // setSuccess(true);
-      const { data } = await axios.get(`/api/admin/users/inactive`);
-      setTotalInactive(data);
-      // setSuccess(false);
-    } catch (err) {
-      console.log(err.response.data.message);
-      // setSuccess(false);
-    }
-  };
-  const moveUserToTrash = async (e, username) => {
-    try {
-      setSuccess(true);
-      const { data } = await axios.put(`/api/admin/users/trash/${username}`);
-      setSuccess(false);
-      if (Platform.OS === "android") {
-        ToastAndroid.showWithGravityAndOffset(
-          "success",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          25,
-          50
-        );
-      } else {
-        AlertIOS.alert("success");
-      }
-    } catch (err) {
-      console.log(err.response.data.message);
-      setSuccess(false);
-    }
-  };
-
-  const makeUserAnAdmin = async (e, username) => {
-    try {
-      setSuccess(true);
-      const { data } = await axios.put(`/api/admin/users/makeuser/${username}`);
-      setSuccess(false);
-      if (Platform.OS === "android") {
-        ToastAndroid.showWithGravityAndOffset(
-          "success",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          25,
-          50
-        );
-      } else {
-        AlertIOS.alert("success");
-      }
-    } catch (err) {
-      console.log(err.response.data.message);
-      setSuccess(false);
-    }
-  };
-
-  const removeUserAsAdmin = async (e, username) => {
-    try {
-      setSuccess(true);
-      const { data } = await axios.patch(
-        `/api/admin/users/makeuser/${username}`
+      setLoading(true);
+      const { data } = await axios.get(
+        `/api/admin/products/mobile?page=` + page
       );
-      setSuccess(false);
-      if (Platform.OS === "android") {
-        ToastAndroid.showWithGravityAndOffset(
-          "success",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          25,
-          50
-        );
-      } else {
-        AlertIOS.alert("success");
-      }
+      setPage(page + 1);
+      setProducts([...products, ...data]);
+      setLoading(false);
     } catch (err) {
-      console.log(err.response.data.message);
-      // toast.error(err.response.data.message);
-      setSuccess(false);
+      console.log(err);
+      setLoading(false);
     }
+  };
+
+  const loadProductsCount = async () => {
+    const { data } = await axios.get(`/api/admin/products/mobile/count`);
+    setProductsCount(data);
   };
 
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
-      loadAllUsers();
-      getTotalUsersInActive();
+      loadProducts();
       setRefreshing(false);
     }, 2000);
   };
@@ -214,125 +98,121 @@ function PosScreen({ navigation }) {
   //   );
   // }
 
+  const renderFooter = () => {
+    return (
+      //Footer View with Load More button
+      <View style={styles.footer}>
+        {productsCount > products?.length && (
+          <SubmitButton
+            loading={loading}
+            title="Load more"
+            onPress={loadProducts}
+          />
+        )}
+      </View>
+    );
+  };
+
   return (
     <>
-      <Header navigation={navigation} HeaderTitle="POS" />
-      <View style={styles.topContainer}>
-        <Button onPress={toggleModal} title="ADD STAFF" color="#841584" />
-
-        <Text style={styles.topText}> In active Staff</Text>
-
-        <View
-          style={{
-            height: 30,
-            width: 30,
-            borderRadius: 15,
-            backgroundColor: colors.primary,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: colors.white, fontWeight: "500" }}>
-            {totalInactive}
-          </Text>
-        </View>
-      </View>
-      <FlatList
-        data={users}
-        keyExtractor={(users) => users._id.toString()}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        renderItem={({ item }) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              elevation: 2,
-              marginBottom: 5,
-            }}
-          >
-            <UserListItems
-              color={
-                item.role.includes("admin") ? colors.infor : colors.airblue
-              }
-              icon={item.role.includes("admin") ? "lock-open-variant" : "lock"}
-              userName={item.name}
-              userContact={item.contactNum}
-              userEmail={item.email}
-              userGeneratedPass={item.generatedPasword}
-              userCreatedAt={`${moment(item && item.createdAt).fromNow()} `}
-              rightContent={(reset) => (
-                <ListActions
-                  icon={"delete-empty"}
-                  onPress={(e) => (moveUserToTrash(e, item.username), reset())}
-                />
-              )}
-              leftContent={(reset) =>
-                item && item.role.includes("admin") ? (
-                  <ListActions
-                    bcolor="infor"
-                    icon="coffee-to-go"
-                    onPress={(e) => (
-                      removeUserAsAdmin(e, item.username), reset()
-                    )}
-                  />
-                ) : (
-                  <ListActions
-                    bcolor="airblue"
-                    icon="coffee"
-                    onPress={(e) => (
-                      makeUserAnAdmin(e, item.username), reset()
-                    )}
-                  />
-                )
-              }
-            />
-          </View>
-        )}
+      <Header
+        navigation={navigation}
+        HeaderTitle={<MaterialCommunityIcons name="cart" size={25} />}
+        cartData={`${cart?.length}`}
+        onPress={() => navigation.navigate("ManageCartItems")}
       />
-
-      <Modal isVisible={isModalVisible}>
-        <View
-          style={{
-            // flex: 1,
-            color: colors.white,
-            backgroundColor: colors.white,
-            borderRadius: 5,
-            padding: 10,
-          }}
-        >
-          <ModalTopInfor title="ADD STAFF" handlePress={toggleModal} />
-          <AppTextInput
-            autoCapitalize="words"
-            autoCorrect={false}
-            icon="pencil"
-            placeholder="Enter full name"
-            value={name}
-            setValue={setName}
-          />
-          <AppTextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            icon="email"
-            placeholder="Enter email"
-            keyboardType="email-address"
-            textContentType="emailAddress"
-            value={email}
-            setValue={setEmail}
-          />
-          <AppTextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            icon="phone"
-            placeholder="Phone Number"
-            keyboardType="numeric"
-            value={contactNum}
-            setValue={setContactNum}
-          />
-          <SubmitButton title="Save" onPress={handleSubmit} loading={loading} />
-        </View>
-      </Modal>
+      <Search
+        proWidth
+        value={keyword}
+        setValue={setKeyword}
+        placeholder="Search products..."
+        handlePress={handlePress}
+      />
+      {keyword ? (
+        <>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {productsSearch.length &&
+              productsSearch.filter(searched(keyword)).map((product, index) => (
+                <>
+                  <ListItems
+                    key={index}
+                    chevronActive={true}
+                    iconActive={false}
+                    mainTitleText="Name:"
+                    subTitleText="Quantity:"
+                    subSubSubTitleText="Selling Price:"
+                    mainTitle={product.name}
+                    subTitle={`${product.quantity}`}
+                    subSubSubTitle={FormatCurrency(
+                      Number(product.sellingPrice)
+                    )}
+                    rightContent={(reset) => (
+                      <ListActions
+                        bcolor="online"
+                        icon="cart"
+                        onPress={() => {
+                          dispatch(addToCart(product, cart)), reset();
+                        }}
+                      />
+                    )}
+                  />
+                </>
+              ))}
+            {/* {productsCount > products?.length && (
+              <SubmitButton
+                title="Load more"
+                loading={loading}
+                onPress={loadProducts}
+              />
+            )} */}
+          </ScrollView>
+        </>
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(product, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          renderItem={({ item, index }) => (
+            <View
+              style={{
+                backgroundColor: "white",
+                elevation: 2,
+                marginBottom: 5,
+              }}
+            >
+              <ListItems
+                chevronActive={true}
+                iconActive={false}
+                mainTitleText="Name:"
+                subTitleText="Quantity:"
+                subSubSubTitleText="Selling Price:"
+                mainTitle={item.name}
+                subTitle={`${item.quantity}`}
+                subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+                rightContent={(reset) => (
+                  <ListActions
+                    bcolor="online"
+                    icon="cart"
+                    onPress={() => {
+                      dispatch(addToCart(item, cart)), reset();
+                    }}
+                  />
+                )}
+              />
+            </View>
+          )}
+          enableEmptySections={true}
+          ListFooterComponent={renderFooter}
+        />
+      )}
     </>
   );
 }
@@ -340,26 +220,10 @@ function PosScreen({ navigation }) {
 export default PosScreen;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-
-  topContainer: {
-    height: 60,
-    backgroundColor: colors.toolbar,
-    flexDirection: "row",
-    justifyContent: "space-around",
+  footer: {
+    padding: 10,
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 5,
-    padding: 5,
-  },
-
-  topText: {
-    color: colors.dark,
-    fontSize: 18,
-    fontWeight: "300",
-    textTransform: "uppercase",
-    marginLeft: 60,
+    flexDirection: "row",
   },
 });

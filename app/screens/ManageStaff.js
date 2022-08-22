@@ -257,7 +257,7 @@ function ManageStaff({ navigation }) {
                 item && item.role.includes("admin") ? (
                   <ListActions
                     bcolor="infor"
-                    icon="coffee-to-go"
+                    icon="account-lock-open-outline"
                     onPress={(e) => (
                       removeUserAsAdmin(e, item.username), reset()
                     )}
@@ -265,7 +265,7 @@ function ManageStaff({ navigation }) {
                 ) : (
                   <ListActions
                     bcolor="airblue"
-                    icon="coffee"
+                    icon="account-lock-outline"
                     onPress={(e) => (
                       makeUserAnAdmin(e, item.username), reset()
                     )}

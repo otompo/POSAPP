@@ -218,7 +218,7 @@ function ManageExpenses({ navigation }) {
 
       <FlatList
         data={expenses}
-        keyExtractor={(expenses) => expenses._id.toString()}
+        keyExtractor={(expenses) => expenses.slug.toString()}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

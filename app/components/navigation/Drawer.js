@@ -55,7 +55,7 @@ function DrawRoot() {
         options={{
           drawerIcon: ({ color }) => (
             <MaterialCommunityIcons
-              name="post"
+              name="cart-arrow-up"
               size={25}
               style={{ marginBottom: 3, alignSelf: "center" }}
               color={color}
@@ -127,7 +127,7 @@ function DrawRoot() {
             options={{
               drawerIcon: ({ color }) => (
                 <MaterialCommunityIcons
-                  name="dolly"
+                  name="cart-arrow-down"
                   size={25}
                   style={{ marginBottom: 3, alignSelf: "center" }}
                   color={color}
@@ -141,7 +141,7 @@ function DrawRoot() {
             options={{
               drawerIcon: ({ color }) => (
                 <MaterialCommunityIcons
-                  name="dolly"
+                  name="salesforce"
                   size={25}
                   style={{ marginBottom: 3, alignSelf: "center" }}
                   color={color}
@@ -155,7 +155,7 @@ function DrawRoot() {
             options={{
               drawerIcon: ({ color }) => (
                 <MaterialCommunityIcons
-                  name="dolly"
+                  name="account-search-outline"
                   size={25}
                   style={{ marginBottom: 3, alignSelf: "center" }}
                   color={color}
@@ -169,7 +169,7 @@ function DrawRoot() {
             options={{
               drawerIcon: ({ color }) => (
                 <MaterialCommunityIcons
-                  name="dolly"
+                  name="chart-pie"
                   size={25}
                   style={{ marginBottom: 3, alignSelf: "center" }}
                   color={color}
@@ -183,7 +183,7 @@ function DrawRoot() {
             options={{
               drawerIcon: ({ color }) => (
                 <MaterialCommunityIcons
-                  name="dolly"
+                  name="chart-areaspline"
                   size={25}
                   style={{ marginBottom: 3, alignSelf: "center" }}
                   color={color}

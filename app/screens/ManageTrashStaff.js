@@ -105,7 +105,7 @@ function ManageTrashStaff({ navigation }) {
 
       <FlatList
         data={users}
-        keyExtractor={(users) => users._id.toString()}
+        keyExtractor={(user, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

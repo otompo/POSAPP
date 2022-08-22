@@ -139,7 +139,7 @@ export default function DrawerItems(props) {
           }}
           onPress={handleSignout}
         >
-          <Icon name="log-out-outline" size={30} color={colors.danger} />
+          <Icon name="power" size={30} color={colors.danger} />
           <Text style={{ color: "#333", fontSize: 16, paddingLeft: 10 }}>
             Log Out
           </Text>

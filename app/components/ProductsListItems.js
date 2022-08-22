@@ -1,88 +1,177 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Divider } from "react-native-elements";
-import { ListItem } from "@rneui/themed";
+import {
+  View,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  RefreshControl,
+} from "react-native";
+import ListActions from "./ListActions";
 import colors from "../config/colors";
+import ListItems from "./ListItems";
+import FormatCurrency from "../helpers/FormatCurrency";
+import moment from "moment";
 
 function ProductsListItems({
-  mainTitle,
-  category,
-  quantity,
-  costPrice,
-  sellingPrice,
-  expiredDate,
-  createdAt,
-  color,
+  keyword,
+  products,
+  refreshing,
+  onRefresh,
+  handleMakeProductActive,
+  handleMakeProductInactive,
+  searched,
   icon,
-  rightContent,
+  iconActive = false,
   leftContent,
 }) {
   return (
     <>
-      <ListItem.Swipeable leftContent={leftContent} rightContent={rightContent}>
-        <MaterialCommunityIcons name={icon} size={25} color={color} />
-        <ListItem.Content>
-          {mainTitle && (
-            <ListItem.Title>
-              <ListItem.Title style={styles.title}>Name:</ListItem.Title>{" "}
-              {mainTitle}
-            </ListItem.Title>
+      {keyword ? (
+        <>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            // style={{ backgroundColor: colors.danger }}
+          >
+            {products.length > 0 ? (
+              products.filter(searched(keyword)).map((product, index) => (
+                <ListItems
+                  chevronActive={true}
+                  iconActive={iconActive}
+                  mainTitleText="Name:"
+                  titleText="Category:"
+                  subTitleText="Quantity:"
+                  subSubTitleText="Cost Price:"
+                  subSubSubTitleText="Selling Price:"
+                  subSubSubSubTitleText="Expired Date:"
+                  mainTitle={product.name}
+                  subTitle={`${product.quantity}`}
+                  subSubTitle={FormatCurrency(Number(product.costPrice))}
+                  subSubSubTitle={FormatCurrency(Number(product.sellingPrice))}
+                  title={
+                    product &&
+                    product.category &&
+                    product.category.map((c, i) => `${c && c.name}`)
+                  }
+                  subSubSubSubTitle={`${moment(
+                    product && product.expireDate
+                  ).format("LL")} `}
+                  rightContent={(reset) => (
+                    <>
+                      {product && product.active ? (
+                        <>
+                          <ListActions
+                            bcolor="online"
+                            icon={"check-circle"}
+                            onPress={(e) => (
+                              handleMakeProductActive(e, product.slug), reset()
+                            )}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <ListActions
+                            icon={"close-circle-outline"}
+                            onPress={(e) => (
+                              handleMakeProductInactive(e, product.slug),
+                              reset()
+                            )}
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                  leftContent={leftContent}
+                />
+              ))
+            ) : (
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: colors.dark, fontSize: 20 }}>
+                  No Result found
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </>
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(product) => product.slug.toString()}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          renderItem={({ item, index }) => (
+            <View
+              style={{
+                backgroundColor: "white",
+                elevation: 2,
+                marginBottom: 5,
+                marginVertical: 10,
+              }}
+            >
+              <ListItems
+                key={index}
+                chevronActive={true}
+                iconActive={iconActive}
+                icon={icon}
+                mainTitleText="Name:"
+                titleText="Category:"
+                subTitleText="Quantity:"
+                subSubTitleText="Cost Price:"
+                subSubSubTitleText="Selling Price:"
+                subSubSubSubTitleText="Expired Date:"
+                mainTitle={item.name}
+                subTitle={`${item.quantity}`}
+                subSubTitle={FormatCurrency(Number(item.costPrice))}
+                subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+                title={
+                  item &&
+                  item.category &&
+                  item.category.map((c, i) => `${c && c.name}`)
+                }
+                subSubSubSubTitle={`${moment(item && item.expireDate).format(
+                  "LL"
+                )} `}
+                rightContent={(reset) => (
+                  <>
+                    {item && item.active ? (
+                      <>
+                        <ListActions
+                          bcolor="online"
+                          icon={"check-circle"}
+                          onPress={(e) => (
+                            handleMakeProductActive(e, item.slug), reset()
+                          )}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <ListActions
+                          icon={"close-circle-outline"}
+                          onPress={(e) => (
+                            handleMakeProductInactive(e, item.slug), reset()
+                          )}
+                        />
+                      </>
+                    )}
+                  </>
+                )}
+                leftContent={
+                  <View>
+                    <Text>{leftContent}</Text>
+                  </View>
+                }
+              />
+            </View>
           )}
-          {category && (
-            <ListItem.Subtitle>
-              <ListItem.Subtitle style={styles.subTitle}>
-                Category:
-              </ListItem.Subtitle>{" "}
-              {category}
-            </ListItem.Subtitle>
-          )}
-          {quantity && (
-            <ListItem.Subtitle>
-              <ListItem.Subtitle style={styles.subTitle}>
-                Quantity:
-              </ListItem.Subtitle>{" "}
-              {quantity}
-            </ListItem.Subtitle>
-          )}
-
-          {costPrice && (
-            <ListItem.Subtitle>
-              <ListItem.Subtitle style={styles.subTitle}>
-                Cost Price:
-              </ListItem.Subtitle>{" "}
-              {costPrice}
-            </ListItem.Subtitle>
-          )}
-
-          {!!sellingPrice && (
-            <ListItem.Subtitle>
-              <ListItem.Subtitle style={styles.subTitle}>
-                Selling Price:
-              </ListItem.Subtitle>{" "}
-              {sellingPrice}
-            </ListItem.Subtitle>
-          )}
-          {expiredDate && (
-            <ListItem.Subtitle>
-              <ListItem.Subtitle style={styles.subTitle}>
-                Expired Date:
-              </ListItem.Subtitle>{" "}
-              {expiredDate}
-            </ListItem.Subtitle>
-          )}
-          {createdAt && (
-            <ListItem.Subtitle>
-              <ListItem.Subtitle style={styles.subTitle}>
-                Created At:
-              </ListItem.Subtitle>{" "}
-              {createdAt}
-            </ListItem.Subtitle>
-          )}
-        </ListItem.Content>
-        <ListItem.Chevron size={35} />
-      </ListItem.Swipeable>
-      <Divider width={1} />
+        />
+      )}
     </>
   );
 }

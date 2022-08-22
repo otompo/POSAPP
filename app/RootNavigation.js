@@ -5,10 +5,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AuthContext, AuthProvider } from "./context/authContext";
 import { Image, Text, View, StatusBar } from "react-native";
+import Home from "./screens/Home";
 import Profile from "./screens/Profile";
 import colors from "./config/colors";
 import Login from "./screens/Login";
-import Home from "./screens/Home";
 import DrawRoot from "./components/navigation/Drawer";
 import PosScreen from "./screens/Pos";
 import ManageStaff from "./screens/ManageStaff";
@@ -19,6 +19,8 @@ import ManageExpiredProducts from "./screens/ManageExpiredProducts";
 import ManageProductsAboutToExpire from "./screens/ManageProductsAboutToExpire";
 import ManageProductOutOfStock from "./screens/ManageProductOutOfStock";
 import ManageProductsAboutOutOfStock from "./screens/ManageProductsAboutOutOfStock";
+import { CartProvider } from "./context/cartContext";
+import ManageCartItems from "./screens/ManageCartItems";
 // import ManageTrashStaff from "./screens/ManageTrashStaff";
 
 const Stack = createNativeStackNavigator();
@@ -27,10 +29,12 @@ const Tab = createBottomTabNavigator();
 export default function RootNavigation() {
   return (
     <AuthProvider>
-      <StatusBar backgroundColor={colors.primary} />
-      <NavigationContainer>
-        <ScreensNav />
-      </NavigationContainer>
+      <CartProvider>
+        <StatusBar backgroundColor={colors.primary} />
+        <NavigationContainer>
+          <ScreensNav />
+        </NavigationContainer>
+      </CartProvider>
     </AuthProvider>
   );
 }
@@ -168,6 +172,11 @@ function ScreensNav(props) {
           <Stack.Screen
             name="ManageProductsAboutOutOfStock"
             component={ManageProductsAboutOutOfStock}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManageCartItems"
+            component={ManageCartItems}
             options={{ headerShown: false }}
           />
         </>

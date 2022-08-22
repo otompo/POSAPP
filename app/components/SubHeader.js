@@ -1,5 +1,11 @@
 import React from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import colors from "../config/colors";
 import { Button } from "@rneui/themed";
 
@@ -10,6 +16,8 @@ function SubHeader({
   data,
   proWidth = true,
   backgroundColor = "toolbar",
+  buttonColor = "primary",
+  loading,
 }) {
   return (
     <View
@@ -20,16 +28,32 @@ function SubHeader({
     >
       <Button
         onPress={onPress}
-        title={buttonTitle}
+        title={
+          loading ? (
+            <ActivityIndicator size="small" color={colors.white} />
+          ) : (
+            buttonTitle
+          )
+        }
         containerStyle={{
           width: data ? 200 : proWidth ? 340 : 200,
           marginHorizontal: data ? 15 : proWidth ? 15 : 90,
         }}
-        buttonStyle={{
-          backgroundColor: colors.primary,
-          borderRadius: 7,
+        buttonStyle={[
+          {
+            backgroundColor: colors[buttonColor],
+            borderRadius: 7,
+          },
+        ]}
+        titleStyle={{
+          textTransform: "uppercase",
         }}
       />
+      {/* <Text style={styles.text}>
+        {loading ? (
+          <ActivityIndicator size="small" color={colors.white} />
+        ) : null}
+      </Text> */}
 
       <Text style={styles.topText}> {subTitle}</Text>
       {data && (

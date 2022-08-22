@@ -153,7 +153,7 @@ function ManageCategories({ navigation }) {
       <SubHeader buttonTitle="+ ADD CATEGORY" onPress={toggleModal} />
       <FlatList
         data={categories}
-        keyExtractor={(categories) => categories._id.toString()}
+        keyExtractor={(categories) => categories.slug.toString()}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

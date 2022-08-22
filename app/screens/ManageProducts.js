@@ -474,7 +474,6 @@ function ManageProducts({ navigation }) {
           />
         </ScrollView>
       </View>
-
       {keyword ? (
         <>
           <ScrollView
@@ -556,7 +555,7 @@ function ManageProducts({ navigation }) {
       ) : (
         <FlatList
           data={products}
-          keyExtractor={(products) => products._id.toString()}
+          keyExtractor={(products) => products.slug.toString()}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

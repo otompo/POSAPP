@@ -10,7 +10,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from "moment";
 import colors from "../../config/colors";
 
-function DatePicker({ date, setDate, titleOne }) {
+function DatePicker({ date, setDate, titleOne, fontSize = 10, padding }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const handleDateConfirm = (date) => {
@@ -43,8 +43,11 @@ function DatePicker({ date, setDate, titleOne }) {
           value={moment(date).format("LL")}
           onChangeText={(date) => setDate(date)}
         />
-        <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
-          <Text style={styles.text}>{titleOne}</Text>
+        <TouchableOpacity
+          onPress={showDatePicker}
+          style={[styles.dateButton, { padding: padding }]}
+        >
+          <Text style={[styles.text, { fontSize: fontSize }]}>{titleOne}</Text>
           <Text style={styles.text}>Date</Text>
         </TouchableOpacity>
       </View>

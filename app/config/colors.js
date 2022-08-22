@@ -9,7 +9,7 @@ export default {
   dark: "#0c0c0c",
   danger: "#ff5252",
   toolbar: "#c6c3b3",
-  warning: "#ffc107",
+  warning: "#E37500",
   infor: "#17a2b8",
   gray: "#6c757d",
   airblue: "#5d8aa8",
