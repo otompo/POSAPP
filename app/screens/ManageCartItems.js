@@ -6,8 +6,12 @@ import {
   ScrollView,
   FlatList,
   TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  Dimensions,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Dropdown } from "react-native-element-dropdown";
 import Header from "../components/Header";
 import {
   removeFromCart,
@@ -15,6 +19,8 @@ import {
   decrease,
   conform,
 } from "../actions/Actions";
+import ModalTopInfor from "../components/ModalTopInfor";
+import Modal from "react-native-modal";
 import { CartContext } from "../context/cartContext";
 import ListItems from "../components/ListItems";
 import ListActions from "../components/ListActions";
@@ -22,52 +28,53 @@ import FormatCurrency from "../helpers/FormatCurrency";
 import colors from "../config/colors";
 import { Button } from "@rneui/themed";
 import AdminCards from "../components/AdminCards";
+import SubmitButton from "../components/Button/SubmitButton";
+import AppTextInput from "../components/Auth/AppTextInput";
+import DropDown from "../components/DropDown";
+import axios from "axios";
 
-const dataItems = () => {
-  return {
-    inventory: [
-      {
-        id: 1,
-        product_name: "Weetabix",
-        product_category: "Cereal",
-        unit_price: "501",
-      },
-      {
-        id: 2,
-        product_name: "Colgate Toothpaste",
-        product_category: "Toiletries",
-        unit_price: "119",
-      },
-      {
-        id: 3,
-        product_name: "Imperial Leather Soap",
-        product_category: "Toiletries",
-        unit_price: "235",
-      },
-      {
-        id: 4,
-        product_name: "Sunlight Detergent",
-        product_category: "Toiletries",
-        unit_price: "401",
-      },
-    ],
-  };
+const selectPaymentMethod = () => {
+  return [
+    {
+      name: "Cash",
+    },
+    {
+      name: "MobileMoney",
+    },
+    {
+      name: "Gift",
+    },
+  ];
 };
 
-function ManageCartItems() {
-  const [actionTriggered, setActionTriggered] = useState("");
+var { width } = Dimensions.get("window");
+function ManageCartItems({ navigation }) {
+  const [isModalVisible, setModalVisible] = useState(false);
   const { stateData, dispatch } = useContext(CartContext);
   const { cart } = stateData;
   const [subTotal, setSubTotal] = useState(0);
   const [products, setProducts] = useState([]);
   const [quantitySold, setQuantitySold] = useState("");
   const [loading, setLoading] = useState(false);
-  const [ok, setOk] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [paydata, setData] = useState(selectPaymentMethod);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [loadedUsers, setLoadedUsers] = useState([]);
+  const [saler, setSaler] = useState("");
   const [paidAmount, setPaidAmount] = useState(0);
   const [grandTotal, setGandTotal] = useState(0);
   const [count, setCount] = useState("");
+
+  const [unitPrice, setUnitPrice] = useState(null);
+
+  const [inEditMode, setInEditMode] = useState({
+    status: false,
+    rowKey: null,
+  });
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   useEffect(() => {
     const getSubTotal = () => {
@@ -94,16 +101,6 @@ function ManageCartItems() {
     setGandTotal(subTotal);
   }, [subTotal]);
 
-  const [data, setData] = useState(dataItems);
-  // console.log(data);
-
-  const [inEditMode, setInEditMode] = useState({
-    status: false,
-    rowKey: null,
-  });
-
-  const [unitPrice, setUnitPrice] = useState(null);
-
   const onEdit = ({ id, currentUnitPrice }) => {
     setInEditMode({
       status: true,
@@ -128,23 +125,31 @@ function ManageCartItems() {
     setUnitPrice(null);
   };
 
+  const handleSubmit = async () => {
+    // console.log(paymentMethod);
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Header
         HeaderTitle={<MaterialCommunityIcons name="cart" size={25} />}
         cartData={`${cart?.length}`}
-        onPress={() => console.log("Free Data")}
       />
-      <AdminCards
-        paddingVertical={5}
-        backgroundColor="warning"
-        fontSize={15}
-        fcolor="white"
-        dataColor="white"
-        title="Grand  Total"
-        data={FormatCurrency(Number(grandTotal))}
-      />
-      {/* <FlatList
+      <SafeAreaView style={styles.container}>
+        <AdminCards
+          paddingVertical={5}
+          backgroundColor="warning"
+          fontSize={15}
+          fcolor="white"
+          dataColor="white"
+          title="Grand  Total"
+          data={FormatCurrency(Number(grandTotal))}
+        />
+        {/* <FlatList
         data={cart}
         keyExtractor={(card, index) => index.toString()}
         showsVerticalScrollIndicator={false}
@@ -176,84 +181,136 @@ function ManageCartItems() {
           </View>
         )}
       /> */}
-      <ScrollView>
-        {cart.map((item) => (
-          <View style={styles.CardData} key={item._id}>
-            <View>
-              <Text>{item.name}</Text>
-            </View>
-            {inEditMode.status && inEditMode.rowKey === item._id ? (
-              <TextInput
-                style={styles.TextInput}
-                keyboardType="numeric"
-                placeholder="Enter QTY..."
-                value={count}
-                onChangeText={(text) => setCount(text)}
-              />
-            ) : (
-              <View style={styles.cartDataStyle}>
-                <Text style={{ color: colors.white }}>{item.count}</Text>
-              </View>
-            )}
-            {inEditMode.status && inEditMode.rowKey === item._id ? (
-              <React.Fragment>
-                <Button
-                  title="Confirm"
-                  // onPress={() =>
-                  //   onSave({ id: item._id, newUnitPrice: unitPrice })
-                  // }
-                  onPress={() => dispatch(conform(cart, count, item._id))}
-                  buttonStyle={{
-                    backgroundColor: colors.online,
-                    borderRadius: 7,
-                  }}
-                  titleStyle={{
-                    textTransform: "uppercase",
-                  }}
-                />
 
-                <Button
-                  title="Close"
-                  // onPress={() => dispatch(decrease(cart, item._id))}
-                  onPress={() => onCancel()}
-                  buttonStyle={{
-                    backgroundColor: colors.danger,
-                    borderRadius: 7,
+        {cart.length === 0 ? (
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: (width * 4) / 5,
+            }}
+          >
+            <MaterialCommunityIcons
+              name="cart-variant"
+              size={85}
+              color={colors.primary}
+            />
+
+            <Text style={{ fontSize: 20, color: colors.primary }}>
+              Cart is Empty
+            </Text>
+          </View>
+        ) : (
+          <>
+            <FlatList
+              data={cart}
+              keyExtractor={(card, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item, index }) => (
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    elevation: 2,
+                    marginBottom: 5,
                   }}
-                  titleStyle={{
-                    textTransform: "uppercase",
-                  }}
-                />
-              </React.Fragment>
-            ) : (
-              <Button
-                title="Edit"
-                onPress={() =>
-                  onEdit({ id: item._id, currentUnitPrice: item.count })
-                }
-                buttonStyle={{
-                  backgroundColor: colors.secondary,
-                  borderRadius: 7,
-                }}
-                titleStyle={{
-                  textTransform: "uppercase",
-                }}
+                >
+                  <ListItems
+                    chevronActive={true}
+                    iconActive={false}
+                    // mainTitleText="Name:"
+                    mainTitle={item.name}
+                    // subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+                    rightContent={(reset) => (
+                      <ListActions
+                        bcolor="danger"
+                        icon="cart-remove"
+                        onPress={() => {
+                          dispatch(removeFromCart(cart, item._id));
+                          reset();
+                        }}
+                      />
+                    )}
+                  />
+                </View>
+              )}
+            />
+            <View
+              style={{
+                marginVertical: 5,
+                marginHorizontal: 35,
+                alignContent: "center",
+              }}
+            >
+              <SubmitButton
+                title="Proceed Width Payment"
+                onPress={toggleModal}
+                // loading={loading}
+              />
+            </View>
+          </>
+        )}
+      </SafeAreaView>
+      <Modal isVisible={isModalVisible}>
+        <View
+          style={{
+            // flex: 1,
+            color: colors.white,
+            backgroundColor: colors.white,
+            borderRadius: 5,
+            padding: 10,
+          }}
+        >
+          <ModalTopInfor title="+ Payment" handlePress={toggleModal} />
+          <AppTextInput
+            autoCorrect={false}
+            keyboardType="numeric"
+            icon="cash"
+            placeholder="Enter paid amount"
+            value={paidAmount}
+            setValue={setPaidAmount}
+          />
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={paydata}
+            search
+            maxHeight={300}
+            labelField="name"
+            valueField="name"
+            searchPlaceholder="Search..."
+            placeholder="Select Payment Mathod"
+            value={paymentMethod}
+            onChange={(item) => {
+              setPaymentMethod(item.name);
+            }}
+            renderLeftIcon={() => (
+              <MaterialCommunityIcons
+                style={styles.icon}
+                color={colors.primary}
+                name="check-circle"
+                size={20}
               />
             )}
-            {/* <Button
-                title="Confirm"
-                // onPress={onPress}
-                buttonStyle={{
-                  backgroundColor: colors.primary,
-                  borderRadius: 7,
-                }}
-                titleStyle={{
-                  textTransform: "uppercase",
-                }}
-              /> */}
+          />
+          <View style={{ marginVertical: 10 }}>
+            <Text>Amount To Pay: {FormatCurrency(grandTotal)}</Text>
+            <Text>
+              Balance:{" "}
+              {paidAmount < grandTotal
+                ? `Input Paid Amount`
+                : ` ${FormatCurrency(paidAmount - grandTotal)}`}{" "}
+            </Text>
           </View>
-        ))}
-      </ScrollView>
+          <SubmitButton
+            title="Proceed"
+            onPress={handleSubmit}
+            // loading={loading}
+          />
+        </View>
+      </Modal>
     </>
   );
 }
@@ -261,6 +318,10 @@ function ManageCartItems() {
 export default ManageCartItems;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
   CardData: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -288,4 +349,36 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  dropdown: {
+    height: 50,
+    // borderBottomColor: colors.white,
+    // borderBottomWidth: 0.5,
+    borderColor: colors.primary,
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: colors.dark,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+    borderRadius: 5,
+    backgroundColor: colors.white,
+    padding: 15,
+    marginHorizontal: 5,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  labelText: { fontSize: 12 },
 });

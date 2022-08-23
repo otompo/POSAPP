@@ -7,7 +7,6 @@ import {
   Platform,
   AlertIOS,
   ActivityIndicator,
-  Text,
   FlatList,
 } from "react-native";
 import SubmitButton from "../components/Button/SubmitButton";
