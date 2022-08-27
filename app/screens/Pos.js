@@ -6,6 +6,10 @@ import {
   FlatList,
   ScrollView,
   Keyboard,
+  ActivityIndicator,
+  Text,
+  Dimensions,
+  SafeAreaView,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ListActions from "../components/ListActions";
@@ -17,7 +21,13 @@ import FormatCurrency from "../helpers/FormatCurrency";
 import SubmitButton from "../components/Button/SubmitButton";
 import { CartContext } from "../context/cartContext";
 import { addToCart } from "../actions/Actions";
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
 
+const { width } = Dimensions.get("window");
 function PosScreen({ navigation }) {
   const { stateData, dispatch } = useContext(CartContext);
   const { cart } = stateData;
@@ -27,7 +37,28 @@ function PosScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [keyword, setKeyword] = useState("");
-  const [page, setPage] = useState(1);
+
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 3.5;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(products));
+  }, [products]);
 
   const searched = (keyword) => (item) => {
     return item.name.toLowerCase().includes(keyword.toLowerCase());
@@ -41,8 +72,8 @@ function PosScreen({ navigation }) {
   useEffect(() => {
     loadProducts();
     loadProductsSearch();
-    loadProductsCount();
-  }, []);
+    // loadProductsCount();
+  }, [cart]);
 
   const loadProductsSearch = async () => {
     try {
@@ -55,14 +86,12 @@ function PosScreen({ navigation }) {
       setLoading(false);
     }
   };
+
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(
-        `/api/admin/products/mobile?page=` + page
-      );
-      setPage(page + 1);
-      setProducts([...products, ...data]);
+      const { data } = await axios.get(`/api/admin/products`);
+      setProducts(data.products);
       setLoading(false);
     } catch (err) {
       console.log(err);
@@ -70,15 +99,16 @@ function PosScreen({ navigation }) {
     }
   };
 
-  const loadProductsCount = async () => {
-    const { data } = await axios.get(`/api/admin/products/mobile/count`);
-    setProductsCount(data);
-  };
+  // const loadProductsCount = async () => {
+  //   const { data } = await axios.get(`/api/admin/products/mobile/count`);
+  //   setProductsCount(data);
+  // };
 
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
       loadProducts();
+      // loadProductsCount();
       setRefreshing(false);
     }, 2000);
   };
@@ -98,26 +128,37 @@ function PosScreen({ navigation }) {
   //   );
   // }
 
-  const renderFooter = () => {
+  const rowRenderer = (type, item, index) => {
+    // console.log(item);
     return (
-      //Footer View with Load More button
-      <View style={styles.footer}>
-        {productsCount > products?.length && (
-          <SubmitButton
-            loading={loading}
-            title="Load more"
-            onPress={loadProducts}
+      <ListItems
+        chevronActive={true}
+        iconActive={false}
+        mainTitleText="Name:"
+        subTitleText="Quantity:"
+        subSubSubTitleText="Selling Price:"
+        mainTitle={item.name}
+        subTitle={`${item.quantity}`}
+        subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+        rightContent={(reset) => (
+          <ListActions
+            bcolor="online"
+            icon="cart"
+            onPress={() => {
+              dispatch(addToCart(item, cart)), reset();
+            }}
           />
         )}
-      </View>
+      />
     );
   };
+  if (!products?.length) return null;
 
   return (
     <>
       <Header
         navigation={navigation}
-        HeaderTitle={<MaterialCommunityIcons name="cart" size={25} />}
+        HeaderTitle={<MaterialCommunityIcons name="cart-arrow-up" size={25} />}
         cartData={`${cart?.length}`}
         onPress={() => navigation.navigate("ManageCartItems")}
       />
@@ -128,6 +169,7 @@ function PosScreen({ navigation }) {
         placeholder="Search products..."
         handlePress={handlePress}
       />
+
       {keyword ? (
         <>
           <ScrollView
@@ -163,55 +205,26 @@ function PosScreen({ navigation }) {
                   />
                 </>
               ))}
-            {/* {productsCount > products?.length && (
-              <SubmitButton
-                title="Load more"
-                loading={loading}
-                onPress={loadProducts}
-              />
-            )} */}
           </ScrollView>
         </>
       ) : (
-        <FlatList
-          data={products}
-          keyExtractor={(product, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          renderItem={({ item, index }) => (
-            <View
-              style={{
-                backgroundColor: "white",
-                elevation: 2,
-                marginBottom: 5,
-              }}
-            >
-              <ListItems
-                chevronActive={true}
-                iconActive={false}
-                mainTitleText="Name:"
-                subTitleText="Quantity:"
-                subSubSubTitleText="Selling Price:"
-                mainTitle={item.name}
-                subTitle={`${item.quantity}`}
-                subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
-                rightContent={(reset) => (
-                  <ListActions
-                    bcolor="online"
-                    icon="cart"
-                    onPress={() => {
-                      dispatch(addToCart(item, cart)), reset();
-                    }}
-                  />
-                )}
-              />
-            </View>
-          )}
-          enableEmptySections={true}
-          ListFooterComponent={renderFooter}
-        />
+        <SafeAreaView style={{ flex: 1 }}>
+          <RecyclerListView
+            style={{ flex: 1 }}
+            dataProvider={dataProvider}
+            layoutProvider={layoutProvider}
+            rowRenderer={rowRenderer}
+            // onEndReached={onEndReached}
+            // onEndReachedThreshold={0.5}
+            // renderFooter={renderFooter}
+            renderAheadOffset={0}
+            scrollViewProps={{
+              refreshControl: (
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              ),
+            }}
+          />
+        </SafeAreaView>
       )}
     </>
   );

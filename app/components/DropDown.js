@@ -41,7 +41,7 @@ function DropDown({
         //   onChange={(item) => {
         //     setSaler(item._id);
         //   }}
-        onChangeText={(item) => setValue(item)}
+        onChange={(item) => setValue(item)}
         renderLeftIcon={() => (
           <MaterialCommunityIcons
             style={styles.icon}

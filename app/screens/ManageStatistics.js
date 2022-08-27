@@ -1,36 +1,62 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import {
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
   StyleSheet,
-  FlatList,
   ActivityIndicator,
+  Dimensions,
+  RefreshControl,
+  Text,
+  View,
+  SafeAreaView,
 } from "react-native";
 import Header from "../components/Header";
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
+import axios from "axios";
+import FormatCurrency from "../helpers/FormatCurrency";
+import ListActions from "../components/ListActions";
+import ListItems from "../components/ListItems";
+const { width } = Dimensions.get("window");
 
 function ManageStatistics({ navigation }) {
-  const [loading, setLoading] = useState(true);
-  const [dataSource, setDataSource] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [offset, setOffset] = useState(1);
-  const [page, setPage] = useState(1);
-  // console.log(products);
+  const [data, setData] = useState([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 3.5;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(data));
+  }, [data]);
+
   useEffect(() => {
     loadProducts();
-    getData();
   }, []);
 
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(
-        `/api/admin/products/mobile?page=` + page
-      );
-      setPage(page + 1);
-      setProducts([...products, ...data]);
+      const { data } = await axios.get(`/api/admin/products`);
+      setData(data.products);
       setLoading(false);
     } catch (err) {
       console.log(err);
@@ -38,86 +64,70 @@ function ManageStatistics({ navigation }) {
     }
   };
 
-  const getData = () => {
-    // console.log("getData");
-    setLoading(true);
-    //Service to get the data from the server to render
-    fetch("https://aboutreact.herokuapp.com/getpost.php?offset=" + offset)
-      //Sending the currect offset with get request
-      .then((response) => response.json())
-      .then((responseJson) => {
-        //Successful response
-        setOffset(offset + 1);
-        //Increasing the offset for the next API call
-        setDataSource([...dataSource, ...responseJson.results]);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const renderFooter = () => {
+  const rowRenderer = (type, item, index) => {
     return (
-      //Footer View with Load More button
-      <View style={styles.footer}>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          onPress={loadProducts}
-          //On Click of button load more data
-          style={styles.loadMoreBtn}
-        >
-          <Text style={styles.btnText}>Load More</Text>
-          {loading ? (
-            <ActivityIndicator color="white" style={{ marginLeft: 8 }} />
-          ) : null}
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const ItemView = ({ item }) => {
-    return (
-      // Flat List Item
-      <Text style={styles.itemStyle} onPress={() => getItem(item)}>
-        {":"}
-        {item.name}
-      </Text>
-    );
-  };
-
-  const ItemSeparatorView = () => {
-    return (
-      // Flat List Item Separator
-      <View
-        style={{
-          height: 0.5,
-          width: "100%",
-          backgroundColor: "#C8C8C8",
-        }}
+      <ListItems
+        key={item._id}
+        chevronActive={true}
+        iconActive={false}
+        mainTitleText="Name:"
+        subTitleText="Quantity:"
+        subSubSubTitleText="Selling Price:"
+        mainTitle={item.name}
+        subTitle={`${item.quantity}`}
+        subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+        rightContent={(reset) => (
+          <ListActions
+            bcolor="online"
+            icon="cart"
+            onPress={() => {
+              dispatch(addToPurchase(item, cart)), reset();
+            }}
+          />
+        )}
       />
     );
   };
+  if (!data?.length) return null;
 
-  const getItem = (item) => {
-    //Function for click on an item
-    alert("Id : " + item._id + " Name : " + item.name);
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      loadProducts();
+      setRefreshing(false);
+    }, 2000);
   };
+
+  const renderFooter = () => {
+    return loading ? (
+      <ActivityIndicator style={{ margin: 10 }} size="large" color={"black"} />
+    ) : (
+      <View style={{ height: 60 }} />
+    );
+  };
+  // const onEndReached = async () => {
+  //   await setData(20);
+  // };
 
   return (
     <>
       <Header navigation={navigation} HeaderTitle="Manage Statistics" />
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.container}>
-          <FlatList
-            data={products}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={ItemSeparatorView}
-            enableEmptySections={true}
-            renderItem={ItemView}
-            ListFooterComponent={renderFooter}
-          />
-        </View>
+        <RecyclerListView
+          style={{ flex: 1 }}
+          dataProvider={dataProvider}
+          layoutProvider={layoutProvider}
+          rowRenderer={rowRenderer}
+          // onEndReached={onEndReached}
+          onEndReachedThreshold={0.5}
+          // renderFooter={renderFooter}
+          // renderAheadOffset={0}
+          scrollViewProps={{
+            refreshControl: (
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            ),
+          }}
+        />
       </SafeAreaView>
     </>
   );
@@ -126,9 +136,15 @@ function ManageStatistics({ navigation }) {
 export default ManageStatistics;
 
 const styles = StyleSheet.create({
+  // container: {
+  //   justifyContent: "center",
+  //   flex: 1,
+  // },
   container: {
-    justifyContent: "center",
     flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   footer: {
     padding: 10,

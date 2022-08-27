@@ -21,6 +21,9 @@ import ManageProductOutOfStock from "./screens/ManageProductOutOfStock";
 import ManageProductsAboutOutOfStock from "./screens/ManageProductsAboutOutOfStock";
 import { CartProvider } from "./context/cartContext";
 import ManageCartItems from "./screens/ManageCartItems";
+import ManagePurcahseCartItems from "./screens/ManagePurcahseCartItems";
+import { PurcahseProvider } from "./context/purchaseContext";
+import ManageAllPurchaseProducts from "./screens/ManageAllPurchaseProducts";
 // import ManageTrashStaff from "./screens/ManageTrashStaff";
 
 const Stack = createNativeStackNavigator();
@@ -30,10 +33,12 @@ export default function RootNavigation() {
   return (
     <AuthProvider>
       <CartProvider>
-        <StatusBar backgroundColor={colors.primary} />
-        <NavigationContainer>
-          <ScreensNav />
-        </NavigationContainer>
+        <PurcahseProvider>
+          <StatusBar backgroundColor={colors.primary} />
+          <NavigationContainer>
+            <ScreensNav />
+          </NavigationContainer>
+        </PurcahseProvider>
       </CartProvider>
     </AuthProvider>
   );
@@ -177,6 +182,16 @@ function ScreensNav(props) {
           <Stack.Screen
             name="ManageCartItems"
             component={ManageCartItems}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManagePurcahseCartItems"
+            component={ManagePurcahseCartItems}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ManageAllPurchaseProducts"
+            component={ManageAllPurchaseProducts}
             options={{ headerShown: false }}
           />
         </>

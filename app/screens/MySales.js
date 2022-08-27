@@ -16,6 +16,7 @@ import SubHeader from "../components/SubHeader";
 import DatePicker from "../components/DatePicker/DatePicker";
 import FormatCurrency from "../helpers/FormatCurrency";
 import ListItems from "../components/ListItems";
+import PurchaseListItem from "../components/PurchaseListItem";
 var { width } = Dimensions.get("window");
 
 function MySales({ navigation }) {
@@ -93,59 +94,32 @@ function MySales({ navigation }) {
               marginBottom: 5,
             }}
           >
-            <ListItems
-              chevronActive={false}
+            {item.products.map((product, i) => (
+              <>
+                <PurchaseListItem
+                  iconActive={false}
+                  chevronActive={false}
+                  mainTitle={product.name}
+                  titleText="Price:"
+                  subTitleText="Quantity:"
+                  title={FormatCurrency(product.sellingPrice * product.count)}
+                  subTitle={product.count}
+                />
+              </>
+            ))}
+            <PurchaseListItem
               iconActive={false}
-              mainTitle={
-                item &&
-                item.products &&
-                item.products.map((product, i) => (
-                  <>
-                    <View style={{ flexDirection: "row" }}>
-                      {/* <Text>{i + 1}</Text> */}
-                      <Text style={{ color: colors.infor }}>
-                        {product && product.name}
-                        {", "}
-                      </Text>
-                    </View>
-                    <View>
-                      <Text>
-                        <Text
-                          style={{ color: colors.primary, fontWeight: "bold" }}
-                        >
-                          Price:
-                        </Text>{" "}
-                        {FormatCurrency(product.sellingPrice * product.count)}{" "}
-                      </Text>
-                    </View>
-                    <View>
-                      <Text>
-                        {" "}
-                        <Text
-                          style={{ color: colors.primary, fontWeight: "bold" }}
-                        >
-                          Quantity:
-                        </Text>{" "}
-                        {product.count}{" "}
-                      </Text>
-                    </View>
-                  </>
-                ))
-              }
-              titleText="Grand Amount:"
-              subSubTitleText="CreatedAt:"
-              title={FormatCurrency(Number(item.grandTotal))}
-              subTitle={item.paymentMethod}
-              subTitleText="Payment Method:"
-              subSubTitle={`${moment(item && item.createdAt).format(
+              chevronActive={false}
+              // mainTitle={product.name}
+              // titleText="Created Date: "
+              subTitleText="Grand Total: "
+              subSubSubTitleText="Created At: "
+              subSubTitleText="Payment Method:"
+              subSubTitle={item.paymentMethod}
+              subTitle={FormatCurrency(Number(item.grandTotal))}
+              subSubSubTitle={`${moment(item && item.createdAt).format(
                 "ddd LL"
               )} `}
-              // rightContent={(reset) => (
-              //   <ListActions
-              //     icon={"delete-empty"}
-              //     onPress={() => (handleDelete(index), reset())}
-              //   />
-              // )}
             />
           </View>
         )}

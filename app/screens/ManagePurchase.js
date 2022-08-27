@@ -1,107 +1,215 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
-import { fakeServer } from "../components/fakeserver";
+import React, { useEffect, useState, useContext } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  SafeAreaView,
+} from "react-native";
+import ListActions from "../components/ListActions";
+import ListItems from "../components/ListItems";
 import Header from "../components/Header";
+import Search from "../components/Search";
+import { addToPurchase } from "../actions/Actions";
+import FormatCurrency from "../helpers/FormatCurrency";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { PurchaseContext } from "../context/purchaseContext";
+import colors from "../config/colors";
+import axios from "axios";
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
 
-const renderItem = ({ i, item }) => {
-  return (
-    <Text
-      style={{
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 20,
-        padding: 15,
-        borderBottomColor: "red",
-        borderBottomWidth: 2,
-      }}
-    >
-      {item.name}
-    </Text>
-  );
-};
+const { width } = Dimensions.get("window");
 
-let stopFetchMore = true;
-
-const ListFooterComponent = () => (
-  <Text
-    style={{
-      fontSize: 16,
-      fontWeight: "bold",
-      textAlign: "center",
-      padding: 5,
-    }}
-  >
-    Loading...
-  </Text>
-);
 function ManagePurchase({ navigation }) {
-  const [data, setData] = useState([]);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const { stateData, dispatch } = useContext(PurchaseContext);
+  const { cart } = stateData;
   const [products, setProducts] = useState([]);
-  const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const fetchData = async () => {
-    const response = await fakeServer(20);
-    setData([...response]);
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 3.5;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(products));
+  }, [products]);
+
+  const searched = (keyword) => (item) => {
+    return item.name.toLowerCase().includes(keyword.toLowerCase());
   };
 
-  const loadProducts = async () => {
-    try {
-      setLoadingMore(true);
-      const { data } = await axios.get(
-        `/api/admin/products/mobile?page=` + page
-      );
-      setPage(page + 1);
-      setProducts([...products, ...data]);
-      setLoadingMore(false);
-    } catch (err) {
-      console.log(err);
-      setLoadingMore(false);
-    }
+  const handlePress = () => {
+    setKeyword("");
+    Keyboard.dismiss();
   };
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [cart]);
 
-  const handleOnEndReached = async () => {
-    setLoadingMore(true);
-    if (!stopFetchMore) {
-      const response = await setPage();
-      if (response === "done") return setLoadingMore(false);
-      // setData([...data, ...response]);
-      setProducts([...products, ...data]);
-      stopFetchMore = true;
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(`/api/admin/products`);
+      setProducts(data.products);
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
     }
-    setLoadingMore(false);
   };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      loadProducts();
+      setRefreshing(false);
+    }, 2000);
+  };
+
+  // if (loading) {
+  //   return (
+  //     <View
+  //       style={{
+  //         alignItems: "center",
+  //         backgroundColor: "#fff",
+  //         height: "100%",
+  //         justifyContent: "center",
+  //       }}
+  //     >
+  //       <ActivityIndicator size="large" color={colors.primary} />
+  //     </View>
+  //   );
+  // }
+
+  const rowRenderer = (type, item, index) => {
+    // console.log(item);
+    return (
+      <ListItems
+        chevronActive={true}
+        iconActive={false}
+        mainTitleText="Name:"
+        subTitleText="Quantity:"
+        subSubSubTitleText="Selling Price:"
+        mainTitle={item.name}
+        subTitle={`${item.quantity}`}
+        subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+        rightContent={(reset) => (
+          <ListActions
+            bcolor="online"
+            icon="cart"
+            onPress={() => {
+              dispatch(addToPurchase(item, cart)), reset();
+            }}
+          />
+        )}
+      />
+    );
+  };
+
+  if (!products?.length) return null;
 
   return (
     <>
-      <Header navigation={navigation} HeaderTitle="Manage Purchase" />
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item}
-        renderItem={renderItem}
-        onEndReached={handleOnEndReached}
-        onEndReachedThreshold={0.5}
-        onScrollBeginDrag={() => {
-          stopFetchMore = false;
-        }}
-        ListFooterComponent={() => loadingMore && <ListFooterComponent />}
+      <Header
+        navigation={navigation}
+        HeaderTitle={
+          <MaterialCommunityIcons name="cart-arrow-down" size={25} />
+        }
+        cartData={`${cart?.length}`}
+        onPress={() => navigation.navigate("ManagePurcahseCartItems")}
       />
+      <Search
+        proWidth
+        value={keyword}
+        setValue={setKeyword}
+        placeholder="Search products..."
+        handlePress={handlePress}
+      />
+
+      {keyword ? (
+        <>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {products.length &&
+              products.filter(searched(keyword)).map((product, index) => (
+                <>
+                  <ListItems
+                    key={index}
+                    chevronActive={true}
+                    iconActive={false}
+                    mainTitleText="Name:"
+                    subTitleText="Quantity:"
+                    subSubSubTitleText="Selling Price:"
+                    mainTitle={product.name}
+                    subTitle={`${product.quantity}`}
+                    subSubSubTitle={FormatCurrency(
+                      Number(product.sellingPrice)
+                    )}
+                    rightContent={(reset) => (
+                      <ListActions
+                        bcolor="online"
+                        icon="cart"
+                        onPress={() => {
+                          dispatch(addToPurchase(product, cart)), reset();
+                        }}
+                      />
+                    )}
+                  />
+                </>
+              ))}
+          </ScrollView>
+        </>
+      ) : (
+        <SafeAreaView style={{ flex: 1 }}>
+          <RecyclerListView
+            style={{ flex: 1 }}
+            dataProvider={dataProvider}
+            layoutProvider={layoutProvider}
+            rowRenderer={rowRenderer}
+            // onEndReached={onEndReached}
+            // onEndReachedThreshold={0.5}
+            // renderFooter={renderFooter}
+            renderAheadOffset={0}
+            scrollViewProps={{
+              refreshControl: (
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              ),
+            }}
+          />
+        </SafeAreaView>
+      )}
     </>
   );
 }
 
 export default ManagePurchase;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+const styles = StyleSheet.create({});

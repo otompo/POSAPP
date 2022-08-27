@@ -16,89 +16,39 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Dropdown } from "react-native-element-dropdown";
 import Header from "../components/Header";
-import {
-  removeFromCart,
-  increase,
-  decrease,
-  conform,
-} from "../actions/Actions";
-import ModalTopInfor from "../components/ModalTopInfor";
-import Modal from "react-native-modal";
-import { CartContext } from "../context/cartContext";
+import { removeFromCart, conformPurchase } from "../actions/Actions";
 import CartListItems from "../components/CartListItems";
 import ListActions from "../components/ListActions";
-import FormatCurrency from "../helpers/FormatCurrency";
 import colors from "../config/colors";
 import { Button } from "@rneui/themed";
-import AdminCards from "../components/AdminCards";
 import SubmitButton from "../components/Button/SubmitButton";
-import AppTextInput from "../components/Auth/AppTextInput";
-import DropDown from "../components/DropDown";
 import axios from "axios";
-
-const selectPaymentMethod = () => {
-  return [
-    {
-      name: "Cash",
-    },
-    {
-      name: "MobileMoney",
-    },
-    {
-      name: "Gift",
-    },
-  ];
-};
+import { PurchaseContext } from "../context/purchaseContext";
 
 var { width } = Dimensions.get("window");
-function ManageCartItems({ navigation }) {
-  const [isModalVisible, setModalVisible] = useState(false);
-  const { stateData, dispatch } = useContext(CartContext);
+function ManagePurcahseCartItems({ navigation }) {
+  const { stateData, dispatch } = useContext(PurchaseContext);
   const { cart } = stateData;
-  const [subTotal, setSubTotal] = useState(0);
-  const [quantitySold, setQuantitySold] = useState("");
+  const [grandQuantity, setGrandQuantity] = useState("");
   const [loading, setLoading] = useState(false);
-  const [paydata, setData] = useState(selectPaymentMethod);
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [paidAmount, setPaidAmount] = useState(0);
-  const [grandTotal, setGandTotal] = useState(0);
-  const [count, setCount] = useState("");
-
-  const [unitPrice, setUnitPrice] = useState(null);
+  const [count, setCount] = useState(false);
 
   const [inEditMode, setInEditMode] = useState({
     status: false,
     rowKey: null,
   });
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
   useEffect(() => {
-    const getSubTotal = () => {
+    const getgrandQuantity = () => {
       const res = cart.reduce((prev, item) => {
-        return prev + item.sellingPrice * item.count;
-      }, 0);
-
-      setSubTotal(res);
-    };
-
-    const getQuantitySold = () => {
-      const res = cart.reduce((prev, item) => {
+        setCount(item.count);
         return prev + item.count;
       }, 0);
 
-      setQuantitySold(res);
+      setGrandQuantity(res);
     };
-
-    getSubTotal();
-    getQuantitySold();
+    getgrandQuantity();
   }, [cart]);
-
-  useEffect(() => {
-    setGandTotal(subTotal);
-  }, [subTotal]);
 
   const onEdit = ({ id, currentUnitPrice }) => {
     setInEditMode({
@@ -118,34 +68,13 @@ function ManageCartItems({ navigation }) {
   };
 
   const handleSubmit = async (e) => {
-    if (!paymentMethod || !paidAmount) {
-      if (Platform.OS === "android") {
-        ToastAndroid.showWithGravityAndOffset(
-          "All fields is required",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-          25,
-          50
-        );
-      } else {
-        AlertIOS.alert("All fields are required");
-      }
-
-      return;
-    }
     try {
       setLoading(true);
-      const { data } = await axios.post(`/api/sales`, {
+      const { data } = await axios.post(`/api/admin/products/purchase`, {
         cart,
-        subTotal,
-        paymentMethod,
-        quantitySold,
-        paidAmount,
-        grandTotal,
+        grandQuantity,
       });
       setLoading(false);
-      setPaidAmount("");
-      setModalVisible(false);
       dispatch({ type: "ADD_CART", payload: [] });
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravityAndOffset(
@@ -167,52 +96,35 @@ function ManageCartItems({ navigation }) {
   return (
     <>
       <Header
-        HeaderTitle={<MaterialCommunityIcons name="cart-arrow-up" size={25} />}
+        HeaderTitle={
+          <MaterialCommunityIcons name="cart-arrow-down" size={25} />
+        }
         cartData={`${cart?.length}`}
         onPress={() => navigation.goBack()}
       />
       <SafeAreaView style={styles.container}>
-        <AdminCards
-          paddingVertical={5}
-          backgroundColor="warning"
-          fontSize={15}
-          fcolor="white"
-          dataColor="white"
-          title="Grand  Total"
-          data={FormatCurrency(Number(grandTotal))}
-        />
-        {/* <FlatList
-        data={cart}
-        keyExtractor={(card, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item, index }) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              elevation: 2,
-              marginBottom: 5,
-            }}
-          >
-            <ListItems
-              chevronActive={true}
-              iconActive={false}
-              // mainTitleText="Name:"
-              mainTitle={item.name}
-              // subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
-              rightContent={(reset) => (
-                <ListActions
-                  bcolor="danger"
-                  icon="cart-remove"
-                  onPress={() => {
-                    dispatch(removeFromCart(cart, item._id));
-                    reset();
-                  }}
-                />
-              )}
-            />
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ManageAllPurchaseProducts")}
+          style={{
+            backgroundColor: colors.airblue,
+            padding: 10,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View>
+            <Text
+              style={{
+                textTransform: "uppercase",
+                fontSize: 20,
+                color: colors.white,
+                fontWeight: "bold",
+              }}
+            >
+              View All Purcahsed Products
+            </Text>
           </View>
-        )}
-      /> */}
+        </TouchableOpacity>
 
         {cart.length === 0 ? (
           <View
@@ -223,7 +135,7 @@ function ManageCartItems({ navigation }) {
             }}
           >
             <MaterialCommunityIcons
-              name="cart-arrow-up"
+              name="cart-arrow-down"
               size={85}
               color={colors.primary}
             />
@@ -250,9 +162,7 @@ function ManageCartItems({ navigation }) {
                     chevronActive={true}
                     iconActive={false}
                     mainTitle={item.name}
-                    title={item.count}
-                    subSubTitleText="Available Qty:"
-                    subSubTitle={item.quantity}
+                    title={`${item.count}`}
                     rightContent={(reset) => (
                       <ListActions
                         bcolor="danger"
@@ -291,7 +201,7 @@ function ManageCartItems({ navigation }) {
                                 }
                                 onPress={() => {
                                   dispatch(
-                                    conform(
+                                    conformPurchase(
                                       cart,
                                       count,
                                       item.quantity,
@@ -372,80 +282,20 @@ function ManageCartItems({ navigation }) {
               }}
             >
               <SubmitButton
-                title="Proceed Width Payment"
-                onPress={toggleModal}
-                // loading={loading}
+                title="Submit"
+                onPress={handleSubmit}
+                loading={loading}
+                disabled={count <= 0}
               />
             </View>
           </>
         )}
       </SafeAreaView>
-      <Modal isVisible={isModalVisible}>
-        <View
-          style={{
-            // flex: 1,
-            color: colors.white,
-            backgroundColor: colors.white,
-            borderRadius: 5,
-            padding: 10,
-          }}
-        >
-          <ModalTopInfor title="+ Payment" handlePress={toggleModal} />
-          <AppTextInput
-            autoCorrect={false}
-            keyboardType="numeric"
-            icon="cash"
-            placeholder="Enter paid amount"
-            value={paidAmount}
-            setValue={setPaidAmount}
-          />
-          <Dropdown
-            style={styles.dropdown}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            data={paydata}
-            search
-            maxHeight={300}
-            labelField="name"
-            valueField="name"
-            searchPlaceholder="Search..."
-            placeholder="Select Payment Mathod"
-            value={paymentMethod}
-            onChange={(item) => {
-              setPaymentMethod(item.name);
-            }}
-            renderLeftIcon={() => (
-              <MaterialCommunityIcons
-                style={styles.icon}
-                color={colors.primary}
-                name="check-circle"
-                size={20}
-              />
-            )}
-          />
-          <View style={{ marginVertical: 10 }}>
-            <Text>Amount To Pay: {FormatCurrency(grandTotal)}</Text>
-            <Text>
-              Balance:{" "}
-              {paidAmount < grandTotal
-                ? `Input Paid Amount`
-                : ` ${FormatCurrency(paidAmount - grandTotal)}`}{" "}
-            </Text>
-          </View>
-          <SubmitButton
-            title="Proceed"
-            onPress={handleSubmit}
-            loading={loading}
-          />
-        </View>
-      </Modal>
     </>
   );
 }
 
-export default ManageCartItems;
+export default ManagePurcahseCartItems;
 
 const styles = StyleSheet.create({
   container: {
