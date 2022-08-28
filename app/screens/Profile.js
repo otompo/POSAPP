@@ -163,14 +163,14 @@ function AccountScreen({ navigation }) {
             >
               <MaterialCommunityIcons
                 name="account"
-                size={50}
+                size={80}
                 color={colors.primary}
               />
             </TouchableOpacity>
           )}
         </CircleLogo>
 
-        <View style={{ marginHorizontal: 30 }}>
+        <View style={{ marginHorizontal: 10 }}>
           <AppTextInput
             autoCapitalize="words"
             autoCorrect={false}
@@ -379,7 +379,7 @@ function TopTabs() {
 function Profile({ navigation }) {
   return (
     <>
-      <Header navigation={navigation} HeaderTitle="Profile" />
+      <Header navigation={navigation} HeaderTitle="Manage Your Profile" />
       <TopTabs />
     </>
   );

@@ -96,6 +96,7 @@ function ManagePurcahseCartItems({ navigation }) {
   return (
     <>
       <Header
+        HeaderSubTitle="Purcahse Cart Items"
         HeaderTitle={
           <MaterialCommunityIcons name="cart-arrow-down" size={25} />
         }

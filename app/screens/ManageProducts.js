@@ -7,16 +7,16 @@ import {
   Platform,
   AlertIOS,
   Text,
-  FlatList,
+  Dimensions,
   ScrollView,
   TouchableOpacity,
   TextInput,
   Keyboard,
+  SafeAreaView,
 } from "react-native";
 import SubmitButton from "../components/Button/SubmitButton";
 import AppTextInput from "../components/Auth/AppTextInput";
 import ModalTopInfor from "../components/ModalTopInfor";
-import ProductsListItems from "../components/ProductsListItems";
 import ListItems from "../components/ListItems";
 import ListActions from "../components/ListActions";
 import colors from "../config/colors";
@@ -31,7 +31,12 @@ import moment from "moment";
 import { Dropdown } from "react-native-element-dropdown";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Search from "../components/Search";
-
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
+const { width } = Dimensions.get("window");
 function ManageProducts({ navigation }) {
   const [value, setValue] = useState(null);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -65,6 +70,28 @@ function ManageProducts({ navigation }) {
   const [preCategoriesName, setPreCategoriesName] = useState([]);
   const [preCategoriesId, setPreCategoriesId] = useState([]);
   const [keyword, setKeyword] = useState("");
+
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 2;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(products));
+  }, [products]);
 
   const searched = (keyword) => (item) => {
     return item.name.toLowerCase().includes(keyword.toLowerCase());
@@ -428,6 +455,56 @@ function ManageProducts({ navigation }) {
     }, 2000);
   };
 
+  const rowRenderer = (type, item, index) => {
+    // console.log(item);
+    return (
+      <ListItems
+        chevronActive={true}
+        iconActive={true}
+        icon="cog"
+        mainTitleText="Name:"
+        titleText="Category:"
+        subTitleText="Quantity:"
+        subSubTitleText="Cost Price:"
+        subSubSubTitleText="Selling Price:"
+        subSubSubSubTitleText="Expired Date:"
+        subSubSubSubSubTitleText="CreatedAt:"
+        mainTitle={item.name}
+        subTitle={`${item.quantity}`}
+        subSubTitle={FormatCurrency(Number(item.costPrice))}
+        subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
+        title={
+          item && item.category && item.category.map((c, i) => `${c && c.name}`)
+        }
+        subSubSubSubTitle={`${moment(item && item.expireDate).format("LL")} `}
+        subSubSubSubSubTitle={`${moment(item.createdAt).format("LL")} `}
+        rightContent={(reset) => (
+          <ListActions
+            icon={"delete-empty"}
+            onPress={() => (handleDelete(index), reset())}
+          />
+        )}
+        leftContent={(reset) => (
+          <>
+            <ListActions
+              minHeight="100%"
+              bcolor="airblue"
+              icon="pencil"
+              onPress={() => {
+                // navigation.navigate("ManageEditExpenses", item);
+                setCurrent(item);
+                setModalVisible(true);
+                setActionTriggered("ACTION_2");
+                reset();
+              }}
+            />
+          </>
+        )}
+      />
+    );
+  };
+  if (!products?.length) return null;
+
   return (
     <>
       <Header navigation={navigation} HeaderTitle="Manage Products" />
@@ -553,82 +630,23 @@ function ManageProducts({ navigation }) {
           </ScrollView>
         </>
       ) : (
-        <FlatList
-          data={products}
-          keyExtractor={(products) => products.slug.toString()}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          renderItem={({ item, index }) => (
-            <View
-              style={{
-                backgroundColor: "white",
-                elevation: 2,
-                marginBottom: 5,
-              }}
-            >
-              <ListItems
-                chevronActive={true}
-                iconActive={true}
-                icon="cog"
-                mainTitleText="Name:"
-                titleText="Category:"
-                subTitleText="Quantity:"
-                subSubTitleText="Cost Price:"
-                subSubSubTitleText="Selling Price:"
-                subSubSubSubTitleText="Expired Date:"
-                subSubSubSubSubTitleText="CreatedAt:"
-                mainTitle={item.name}
-                subTitle={`${item.quantity}`}
-                subSubTitle={FormatCurrency(Number(item.costPrice))}
-                subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
-                title={
-                  item &&
-                  item.category &&
-                  item.category.map((c, i) => `${c && c.name}`)
-                }
-                subSubSubSubTitle={`${moment(item && item.expireDate).format(
-                  "LL"
-                )} `}
-                subSubSubSubSubTitle={`${moment(item.createdAt).format("LL")} `}
-                rightContent={(reset) => (
-                  <ListActions
-                    icon={"delete-empty"}
-                    onPress={() => (handleDelete(index), reset())}
-                  />
-                )}
-                leftContent={(reset) => (
-                  <>
-                    <ListActions
-                      minHeight="100%"
-                      bcolor="airblue"
-                      icon="pencil"
-                      onPress={() => {
-                        // navigation.navigate("ManageEditExpenses", item);
-                        setCurrent(item);
-                        setModalVisible(true);
-                        setActionTriggered("ACTION_2");
-                        reset();
-                      }}
-                    />
-                    {/* <ListActions
-                    minHeight="50%"
-                    bcolor="online"
-                    icon="reload"
-                    onPress={() => {
-                      setCurrent(item);
-                      setModalVisible(true);
-                      setActionTriggered("ACTION_3");
-                      reset();
-                    }}
-                  /> */}
-                  </>
-                )}
-              />
-            </View>
-          )}
-        />
+        <SafeAreaView style={{ flex: 1 }}>
+          <RecyclerListView
+            style={{ flex: 1 }}
+            dataProvider={dataProvider}
+            layoutProvider={layoutProvider}
+            rowRenderer={rowRenderer}
+            // onEndReached={onEndReached}
+            // onEndReachedThreshold={0.5}
+            // renderFooter={renderFooter}
+            renderAheadOffset={0}
+            scrollViewProps={{
+              refreshControl: (
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              ),
+            }}
+          />
+        </SafeAreaView>
       )}
       <Modal isVisible={isModalVisible}>
         <View

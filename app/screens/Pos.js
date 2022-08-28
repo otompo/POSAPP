@@ -26,6 +26,8 @@ import {
   DataProvider,
   LayoutProvider,
 } from "recyclerlistview";
+import SubHeader from "../components/SubHeader";
+import colors from "../config/colors";
 
 const { width } = Dimensions.get("window");
 function PosScreen({ navigation }) {
@@ -158,6 +160,7 @@ function PosScreen({ navigation }) {
     <>
       <Header
         navigation={navigation}
+        HeaderSubTitle="Sell Products"
         HeaderTitle={<MaterialCommunityIcons name="cart-arrow-up" size={25} />}
         cartData={`${cart?.length}`}
         onPress={() => navigation.navigate("ManageCartItems")}
@@ -168,6 +171,29 @@ function PosScreen({ navigation }) {
         setValue={setKeyword}
         placeholder="Search products..."
         handlePress={handlePress}
+      />
+
+      <SubHeader
+        buttonTitle={
+          <>
+            <MaterialCommunityIcons
+              name="barcode-scan"
+              size={30}
+              color={colors.white}
+            />
+            <Text
+              style={{
+                color: colors.white,
+                textTransform: "uppercase",
+                padding: 5,
+              }}
+            >
+              Scan to add to cart
+            </Text>
+          </>
+        }
+        // buttonTitle="Scan To add to Cart"
+        // onPress={toggleModal}
       />
 
       {keyword ? (

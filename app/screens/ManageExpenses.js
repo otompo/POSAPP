@@ -8,8 +8,10 @@ import {
   AlertIOS,
   TextInput,
   Text,
-  FlatList,
   TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import SubmitButton from "../components/Button/SubmitButton";
 import AppTextInput from "../components/Auth/AppTextInput";
@@ -25,6 +27,13 @@ import ListActions from "../components/ListActions";
 import colors from "../config/colors";
 import moment from "moment";
 import axios from "axios";
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
+
+const { width } = Dimensions.get("window");
 
 function ManageExpenses({ navigation }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -45,6 +54,28 @@ function ManageExpenses({ navigation }) {
   const [dates, setDates] = useState(Date(previousDate).toDateString);
   const [names, setNames] = useState("");
   const [amounts, setAmounts] = useState("");
+
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 3.5;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(expenses));
+  }, [expenses]);
 
   useEffect(() => {
     if (!current) {
@@ -205,6 +236,50 @@ function ManageExpenses({ navigation }) {
     }, 2000);
   };
 
+  // if (loading) {
+  //   return (
+  //     <View
+  //       style={{
+  //         alignItems: "center",
+  //         backgroundColor: "#fff",
+  //         height: "100%",
+  //         justifyContent: "center",
+  //       }}
+  //     >
+  //       <ActivityIndicator size="large" color={colors.primary} />
+  //     </View>
+  //   );
+  // }
+
+  const rowRenderer = (type, item, index) => {
+    // console.log(item);
+    return (
+      <ListItems
+        mainTitleText="Name:"
+        titleText="Amount:"
+        dateTitle="Date:"
+        mainTitle={item.name}
+        title={FormatCurrency(Number(item.amount))}
+        subSubTitle={`${moment(item && item.date).format("ddd LL")} `}
+        rightContent={(reset) => (
+          <ListActions
+            bcolor="airblue"
+            icon={"pencil"}
+            onPress={() => {
+              // navigation.navigate("ManageEditExpenses", item);
+              setCurrent(item);
+              setModalVisible(true);
+              setActionTriggered("ACTION_2");
+              reset();
+            }}
+          />
+        )}
+      />
+    );
+  };
+
+  if (!expenses?.length) return null;
+
   return (
     <>
       <Header navigation={navigation} HeaderTitle="Manage Expenses" />
@@ -216,45 +291,23 @@ function ManageExpenses({ navigation }) {
         }}
       />
 
-      <FlatList
-        data={expenses}
-        keyExtractor={(expenses) => expenses.slug.toString()}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        renderItem={({ item }) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              elevation: 2,
-              marginBottom: 5,
-            }}
-          >
-            <ListItems
-              mainTitleText="Name:"
-              titleText="Amount:"
-              dateTitle="Date:"
-              mainTitle={item.name}
-              title={FormatCurrency(Number(item.amount))}
-              subSubTitle={`${moment(item && item.date).format("ddd LL")} `}
-              rightContent={(reset) => (
-                <ListActions
-                  bcolor="airblue"
-                  icon={"pencil"}
-                  onPress={() => {
-                    // navigation.navigate("ManageEditExpenses", item);
-                    setCurrent(item);
-                    setModalVisible(true);
-                    setActionTriggered("ACTION_2");
-                    reset();
-                  }}
-                />
-              )}
-            />
-          </View>
-        )}
-      />
+      <SafeAreaView style={{ flex: 1 }}>
+        <RecyclerListView
+          style={{ flex: 1 }}
+          dataProvider={dataProvider}
+          layoutProvider={layoutProvider}
+          rowRenderer={rowRenderer}
+          // onEndReached={onEndReached}
+          // onEndReachedThreshold={0.5}
+          // renderFooter={renderFooter}
+          renderAheadOffset={0}
+          scrollViewProps={{
+            refreshControl: (
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            ),
+          }}
+        />
+      </SafeAreaView>
       <Modal isVisible={isModalVisible}>
         <View
           style={{

@@ -6,8 +6,9 @@ import {
   ToastAndroid,
   Platform,
   AlertIOS,
+  Dimensions,
   ActivityIndicator,
-  FlatList,
+  SafeAreaView,
 } from "react-native";
 import SubmitButton from "../components/Button/SubmitButton";
 import AppTextInput from "../components/Auth/AppTextInput";
@@ -20,6 +21,14 @@ import ListActions from "../components/ListActions";
 import SubHeader from "../components/SubHeader";
 import colors from "../config/colors";
 import axios from "axios";
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
+import { useIsFocused } from "@react-navigation/native";
+
+const { width } = Dimensions.get("window");
 
 function ManageStaff({ navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -31,15 +40,40 @@ function ManageStaff({ navigation }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [users, setUsers] = useState([]);
+  const isFocused = useIsFocused();
+
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 2.5;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(users));
+  }, [users]);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
   useEffect(() => {
-    loadAllUsers();
-    getTotalUsersInActive();
-  }, [success]);
+    if (isFocused) {
+      loadAllUsers();
+      getTotalUsersInActive();
+    }
+  }, [isFocused, success]);
 
   const handleSubmit = async (e) => {
     if (!name || !email || !contactNum) {
@@ -212,6 +246,44 @@ function ManageStaff({ navigation }) {
   //     </View>
   //   );
   // }
+
+  const rowRenderer = (type, item, index) => {
+    // console.log(item);
+    return (
+      <UserListItems
+        color={item.role.includes("admin") ? colors.infor : colors.airblue}
+        icon={item.role.includes("admin") ? "lock-open-variant" : "lock"}
+        userName={item.name}
+        userContact={item.contactNum}
+        userEmail={item.email}
+        userGeneratedPass={item.generatedPasword}
+        userCreatedAt={`${moment(item && item.createdAt).fromNow()} `}
+        rightContent={(reset) => (
+          <ListActions
+            icon={"delete-empty"}
+            onPress={(e) => (moveUserToTrash(e, item.username), reset())}
+          />
+        )}
+        leftContent={(reset) =>
+          item && item.role.includes("admin") ? (
+            <ListActions
+              bcolor="infor"
+              icon="account-lock-open-outline"
+              onPress={(e) => (removeUserAsAdmin(e, item.username), reset())}
+            />
+          ) : (
+            <ListActions
+              bcolor="airblue"
+              icon="account-lock-outline"
+              onPress={(e) => (makeUserAnAdmin(e, item.username), reset())}
+            />
+          )
+        }
+      />
+    );
+  };
+
+  if (!users?.length) return null;
   return (
     <>
       <Header navigation={navigation} HeaderTitle="Manage Staff" />
@@ -222,60 +294,23 @@ function ManageStaff({ navigation }) {
         onPress={toggleModal}
       />
 
-      <FlatList
-        data={users}
-        keyExtractor={(users) => users._id.toString()}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        renderItem={({ item }) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              elevation: 2,
-              marginBottom: 5,
-            }}
-          >
-            <UserListItems
-              color={
-                item.role.includes("admin") ? colors.infor : colors.airblue
-              }
-              icon={item.role.includes("admin") ? "lock-open-variant" : "lock"}
-              userName={item.name}
-              userContact={item.contactNum}
-              userEmail={item.email}
-              userGeneratedPass={item.generatedPasword}
-              userCreatedAt={`${moment(item && item.createdAt).fromNow()} `}
-              rightContent={(reset) => (
-                <ListActions
-                  icon={"delete-empty"}
-                  onPress={(e) => (moveUserToTrash(e, item.username), reset())}
-                />
-              )}
-              leftContent={(reset) =>
-                item && item.role.includes("admin") ? (
-                  <ListActions
-                    bcolor="infor"
-                    icon="account-lock-open-outline"
-                    onPress={(e) => (
-                      removeUserAsAdmin(e, item.username), reset()
-                    )}
-                  />
-                ) : (
-                  <ListActions
-                    bcolor="airblue"
-                    icon="account-lock-outline"
-                    onPress={(e) => (
-                      makeUserAnAdmin(e, item.username), reset()
-                    )}
-                  />
-                )
-              }
-            />
-          </View>
-        )}
-      />
+      <SafeAreaView style={{ flex: 1 }}>
+        <RecyclerListView
+          style={{ flex: 1 }}
+          dataProvider={dataProvider}
+          layoutProvider={layoutProvider}
+          rowRenderer={rowRenderer}
+          // onEndReached={onEndReached}
+          // onEndReachedThreshold={0.5}
+          // renderFooter={renderFooter}
+          renderAheadOffset={0}
+          scrollViewProps={{
+            refreshControl: (
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            ),
+          }}
+        />
+      </SafeAreaView>
 
       <Modal isVisible={isModalVisible}>
         <View

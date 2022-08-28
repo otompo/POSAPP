@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
   RefreshControl,
   StyleSheet,
-  Text,
-  View,
   Dimensions,
   SafeAreaView,
+  Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import ListActions from "../components/ListActions";
 import ListItems from "../components/ListItems";
@@ -17,13 +15,13 @@ import { addToPurchase } from "../actions/Actions";
 import FormatCurrency from "../helpers/FormatCurrency";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { PurchaseContext } from "../context/purchaseContext";
-import colors from "../config/colors";
 import axios from "axios";
 import {
   RecyclerListView,
   DataProvider,
   LayoutProvider,
 } from "recyclerlistview";
+import colors from "../config/colors";
 
 const { width } = Dimensions.get("window");
 
@@ -139,6 +137,7 @@ function ManagePurchase({ navigation }) {
         HeaderTitle={
           <MaterialCommunityIcons name="cart-arrow-down" size={25} />
         }
+        HeaderSubTitle="Purchase Products"
         cartData={`${cart?.length}`}
         onPress={() => navigation.navigate("ManagePurcahseCartItems")}
       />

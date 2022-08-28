@@ -15,11 +15,12 @@ function CircleLogo({ children }) {
       <View
         style={{
           backgroundColor: "#fff",
-          height: 150,
-          width: 150,
+          height: 200,
+          width: 200,
           borderRadius: 100,
           borderWidth: 2,
           borderColor: colors.primary,
+          backgroundColor: colors.white,
           justifyContent: "center",
           alignItems: "center",
           marginBottom: 17,
@@ -30,7 +31,7 @@ function CircleLogo({ children }) {
           children
         ) : (
           <Image
-            source={require("../../assets/logo.webp")}
+            source={require("../../assets/logo.png")}
             style={{
               width: 200,
               height: 200,

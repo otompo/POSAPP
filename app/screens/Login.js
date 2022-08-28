@@ -7,15 +7,18 @@ import {
   AlertIOS,
   Image,
   Dimensions,
+  Text,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppTextInput from "../components/Auth/AppTextInput";
 import SubmitButton from "../components/Button/SubmitButton";
-// import CircleLogo from "../components/Auth/CircleLogo";
+import CircleLogo from "../components/Auth/CircleLogo";
 import { AuthContext } from "../context/authContext";
 import colors from "../config/colors";
 import axios from "axios";
+import useSettings from "../hooks/useSettings";
+import Header from "../components/Header";
 var { width } = Dimensions.get("window");
 
 function Login({ navigation }) {
@@ -23,13 +26,13 @@ function Login({ navigation }) {
   const [password, setPassword] = useState("otompo123@");
   const [loading, setLoading] = useState(false);
   const [state, setState] = useContext(AuthContext);
-  //   const { name, companyLogo } = useSettings();
+  const { name, companyLogo } = useSettings();
 
-  // useEffect(() => {
-  //   if (state) {
-  //     navigation.navigate("Home");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (state) {
+      navigation.navigate("Home");
+    }
+  }, []);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -92,43 +95,46 @@ function Login({ navigation }) {
   };
 
   return (
-    <KeyboardAwareScrollView
-      enableOnAndroid={true}
-      contentContainerStyle={{ flexGrow: 1 }} // make the scrollView full screen
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
+    <View
+      // enableOnAndroid={true}
+      // contentContainerStyle={{ flexGrow: 1 }}
+      // showsVerticalScrollIndicator={false}
       style={styles.container}
     >
-      {/* <View style={styles.logoContainer}>
-          <CircleLogo>
-            {companyLogo && companyLogo ? (
-              <Image
-                source={{ uri: companyLogo }}
-                style={{
-                  height: 160,
-                  width: 160,
-                  borderRadius: 100,
-                  marginVertical: 20,
-                  borderWidth: 3,
-                  borderColor: colors.primary,
-                }}
-              />
-            ) : null}
-          </CircleLogo>
-          {name && name ? (
-            <Text
-              center
+      <Header
+        // HeaderTitle="Login"
+        justifyContent="center"
+      />
+      <View style={styles.logoContainer}>
+        <CircleLogo>
+          {companyLogo && companyLogo ? (
+            <Image
+              source={{ uri: companyLogo }}
               style={{
-                marginTop: 25,
-                fontWeight: "bold",
-                fontSize: 22,
-                textTransform: "uppercase",
+                height: 200,
+                width: 200,
+                borderRadius: 100,
+                marginVertical: 20,
+                borderWidth: 3,
+                borderColor: colors.primary,
               }}
-            >
-              {name}
-            </Text>
+            />
           ) : null}
-        </View> */}
+        </CircleLogo>
+        {name && name ? (
+          <Text
+            center
+            style={{
+              marginTop: 25,
+              fontWeight: "bold",
+              fontSize: 22,
+              textTransform: "uppercase",
+            }}
+          >
+            {name}
+          </Text>
+        ) : null}
+      </View>
 
       <View style={styles.MainContainer}>
         <AppTextInput
@@ -156,7 +162,7 @@ function Login({ navigation }) {
 
         <SubmitButton title="Log In" onPress={handleSubmit} loading={loading} />
       </View>
-    </KeyboardAwareScrollView>
+    </View>
   );
 }
 
@@ -164,22 +170,24 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    // padding: 10,
     backgroundColor: colors.white,
   },
   MainContainer: {
-    width: width * 1,
     padding: 20,
     paddingRight: 10,
     paddingLeft: 10,
     justifyContent: "center",
     alignItems: "center",
     height: width * 2,
+    marginVertical: (width * 1) / 8,
   },
   logoContainer: {
     padding: 10,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: -15,
+    position: "absolute",
+    top: 35,
+    left: 80,
   },
 });

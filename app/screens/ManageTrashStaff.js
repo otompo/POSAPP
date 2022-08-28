@@ -13,22 +13,25 @@ import {
 import axios from "axios";
 import colors from "../config/colors";
 import { Divider } from "react-native-elements";
-import UserFormList from "../components/UserFormList";
+import UserListItems from "../components/UserListItems";
 import ListActions from "../components/ListActions";
 import moment from "moment";
 import Header from "../components/Header";
+import { useIsFocused } from "@react-navigation/native";
 
 function ManageTrashStaff({ navigation }) {
   const [success, setSuccess] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [totalInactive, setTotalInactive] = useState("");
   const [users, setUsers] = useState([]);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    getAllUsersInTrash();
-    getTotalUsersInActive();
-    if (totalInactive === 0) navigation.navigate("ManageStaff");
-  }, [success]);
+    if (isFocused) {
+      getAllUsersInTrash();
+      getTotalUsersInActive();
+    }
+  }, [isFocused, success]);
 
   const getAllUsersInTrash = async () => {
     try {
@@ -118,17 +121,19 @@ function ManageTrashStaff({ navigation }) {
               marginBottom: 5,
             }}
           >
-            <UserFormList
+            <UserListItems
               userName={item.name}
               userContact={item.contactNum}
               userEmail={item.email}
               userGeneratedPass={item.generatedPasword}
               userCreatedAt={`${moment(item && item.createdAt).fromNow()} `}
-              renderRightActions={() => (
+              rightContent={(reset) => (
                 <ListActions
                   bcolor="online"
                   icon={"reload"}
-                  onPress={(e) => moveUserFromTrash(e, item.username)}
+                  onPress={(e) => (
+                    moveUserFromTrash(e, item.username), reset()
+                  )}
                 />
               )}
             />

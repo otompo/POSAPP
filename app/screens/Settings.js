@@ -97,7 +97,7 @@ function Settings({ navigation }) {
     if (!pickerResult.cancelled) {
       let base64Image = `data:image/jpg;base64,${pickerResult.base64}`;
       // save image to state for preview
-      // setCompanyLogo(base64Image);
+      setCompanyLogo(base64Image);
     }
   };
 
@@ -107,16 +107,16 @@ function Settings({ navigation }) {
 
   return (
     <>
-      <Header navigation={navigation} HeaderTitle="Settings" />
+      <Header navigation={navigation} HeaderTitle="Manage Settings" />
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* <View style={styles.logoContainer}>
+        <View style={styles.logoContainer}>
           <CircleLogo>
             {companyLogo && companyLogo ? (
               <Image
                 source={{ uri: companyLogo }}
                 style={{
-                  height: 160,
-                  width: 160,
+                  height: 200,
+                  width: 200,
                   borderRadius: 100,
                   marginVertical: 20,
                   borderWidth: 3,
@@ -163,7 +163,7 @@ function Settings({ navigation }) {
           ) : (
             <></>
           )}
-        </View> */}
+        </View>
         <View style={styles.MainContainer}>
           <AppTextInput
             autoCapitalize="words"

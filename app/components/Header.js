@@ -13,10 +13,12 @@ var { width } = Dimensions.get("window");
 
 function Header({
   navigation,
-  HeaderTitle = "Header",
+  HeaderTitle,
+  HeaderSubTitle,
   justifyContent = "space-between",
   cartData,
   onPress,
+  textLeft = 100,
 }) {
   return (
     <SafeAreaView style={styles.headerMain}>
@@ -25,6 +27,9 @@ function Header({
           {navigation && <Icon name="menu-outline" size={28} color="#fff" />}
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{HeaderTitle}</Text>
+        <Text style={[styles.headerSubTitle, { left: textLeft }]}>
+          {HeaderSubTitle}
+        </Text>
       </View>
       {cartData && (
         <TouchableOpacity style={styles.cartDataStyle} onPress={onPress}>
@@ -55,6 +60,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   headerTitle: { color: "#fff", textTransform: "uppercase" },
+  headerSubTitle: {
+    position: "absolute",
+    color: "#fff",
+    textTransform: "uppercase",
+    top: 0,
+    left: 100,
+  },
   cartDataStyle: {
     height: 30,
     width: 30,
