@@ -632,14 +632,13 @@ function ManageProducts({ navigation }) {
       ) : (
         <SafeAreaView style={{ flex: 1 }}>
           <RecyclerListView
-            style={{ flex: 1 }}
             dataProvider={dataProvider}
             layoutProvider={layoutProvider}
             rowRenderer={rowRenderer}
             // onEndReached={onEndReached}
             // onEndReachedThreshold={0.5}
             // renderFooter={renderFooter}
-            renderAheadOffset={0}
+            // renderAheadOffset={0}
             scrollViewProps={{
               refreshControl: (
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

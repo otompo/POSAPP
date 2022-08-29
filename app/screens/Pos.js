@@ -3,14 +3,17 @@ import {
   View,
   StyleSheet,
   RefreshControl,
-  FlatList,
   ScrollView,
   Keyboard,
   ActivityIndicator,
   Text,
   Dimensions,
   SafeAreaView,
+  ToastAndroid,
+  Platform,
+  AlertIOS,
 } from "react-native";
+import { BarCodeScanner } from "expo-barcode-scanner";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ListActions from "../components/ListActions";
 import Header from "../components/Header";
@@ -18,9 +21,9 @@ import axios from "axios";
 import Search from "../components/Search";
 import ListItems from "../components/ListItems";
 import FormatCurrency from "../helpers/FormatCurrency";
-import SubmitButton from "../components/Button/SubmitButton";
 import { CartContext } from "../context/cartContext";
 import { addToCart } from "../actions/Actions";
+import Modal from "react-native-modal";
 import {
   RecyclerListView,
   DataProvider,
@@ -28,17 +31,26 @@ import {
 } from "recyclerlistview";
 import SubHeader from "../components/SubHeader";
 import colors from "../config/colors";
+import ModalTopInfor from "../components/ModalTopInfor";
 
 const { width } = Dimensions.get("window");
 function PosScreen({ navigation }) {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [scanned, setScanned] = useState(false);
+  const [scannedData, setScannedData] = useState("");
+  const [showScanner, setShowScanner] = useState(false);
   const { stateData, dispatch } = useContext(CartContext);
   const { cart } = stateData;
   const [productsSearch, setProductsSearch] = useState([]);
-  const [productsCount, setProductsCount] = useState(0);
+  // const [productsCount, setProductsCount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [keyword, setKeyword] = useState("");
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   const [dataProvider, setDataProvider] = useState(
     new DataProvider((r1, r2) => {
@@ -62,6 +74,19 @@ function PosScreen({ navigation }) {
     setDataProvider((prevState) => prevState.cloneWithRows(products));
   }, [products]);
 
+  useEffect(() => {
+    loadProducts();
+    loadProductsSearch();
+  }, [cart]);
+
+  const askPermissions = () => {
+    (async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+
+      setShowScanner(status == "granted");
+    })();
+  };
+
   const searched = (keyword) => (item) => {
     return item.name.toLowerCase().includes(keyword.toLowerCase());
   };
@@ -70,12 +95,6 @@ function PosScreen({ navigation }) {
     setKeyword("");
     Keyboard.dismiss();
   };
-
-  useEffect(() => {
-    loadProducts();
-    loadProductsSearch();
-    // loadProductsCount();
-  }, [cart]);
 
   const loadProductsSearch = async () => {
     try {
@@ -99,6 +118,28 @@ function PosScreen({ navigation }) {
       console.log(err);
       setLoading(false);
     }
+  };
+
+  const handleScanned = ({ type, data }) => {
+    setScannedData(data);
+    if (Platform.OS === "android") {
+      ToastAndroid.showWithGravityAndOffset(
+        "Success",
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+        25,
+        50
+      );
+    } else {
+      AlertIOS.alert("Success");
+    }
+
+    // if (data) {
+    // setShowScanner(false);
+    // setScanned(true);
+    // setScannedData("");
+    // setScanned(false);
+    // }
   };
 
   // const loadProductsCount = async () => {
@@ -192,8 +233,7 @@ function PosScreen({ navigation }) {
             </Text>
           </>
         }
-        // buttonTitle="Scan To add to Cart"
-        // onPress={toggleModal}
+        onPress={() => (askPermissions, setModalVisible(true))}
       />
 
       {keyword ? (
@@ -236,7 +276,6 @@ function PosScreen({ navigation }) {
       ) : (
         <SafeAreaView style={{ flex: 1 }}>
           <RecyclerListView
-            style={{ flex: 1 }}
             dataProvider={dataProvider}
             layoutProvider={layoutProvider}
             rowRenderer={rowRenderer}
@@ -252,6 +291,50 @@ function PosScreen({ navigation }) {
           />
         </SafeAreaView>
       )}
+
+      <Modal isVisible={isModalVisible}>
+        <View
+          style={{
+            // flex: 1,
+            color: colors.white,
+            backgroundColor: colors.white,
+            borderRadius: 5,
+            padding: 10,
+          }}
+        >
+          <ModalTopInfor title="+ SCAN DATA" handlePress={toggleModal} />
+
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <BarCodeScanner
+              onBarCodeScanned={scanned ? undefined : handleScanned}
+              style={{
+                height: width,
+                width: width,
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            />
+          </View>
+
+          <ScrollView
+            contentContainerStyle={{
+              marginVertical: 20,
+              marginHorizontal: 20,
+            }}
+          >
+            <View>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                {scannedData}
+              </Text>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
     </>
   );
 }

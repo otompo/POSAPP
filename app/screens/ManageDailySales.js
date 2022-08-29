@@ -6,6 +6,7 @@ import {
   Dimensions,
   FlatList,
   RefreshControl,
+  SafeAreaView,
 } from "react-native";
 import AdminCards from "../components/AdminCards";
 import DatePicker from "../components/DatePicker/DatePicker";
@@ -16,6 +17,11 @@ import colors from "../config/colors";
 import FormatCurrency from "../helpers/FormatCurrency";
 import axios from "axios";
 import moment from "moment";
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
 
 var { width } = Dimensions.get("window");
 function ManageDailySales({ navigation }) {
@@ -26,6 +32,29 @@ function ManageDailySales({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   // const [quantitySold, setQuantitySold] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
+
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 2;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(sales));
+  }, [sales]);
+
   useEffect(() => {
     handleSalesSubmit();
   }, []);
@@ -55,6 +84,52 @@ function ManageDailySales({ navigation }) {
 
       setRefreshing(false);
     }, 2000);
+  };
+
+  const rowRenderer = (type, item, index) => {
+    return (
+      <ListItems
+        chevronActive={false}
+        iconActive={false}
+        mainTitle={
+          item &&
+          item.products &&
+          item.products.map((product, i) => (
+            <>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={{ color: colors.infor }}>
+                  {product && product.name}
+                  {", "}
+                </Text>
+              </View>
+              <View>
+                <Text>
+                  <Text style={{ color: colors.primary, fontWeight: "bold" }}>
+                    Price:
+                  </Text>{" "}
+                  {FormatCurrency(product.sellingPrice * product.count)}{" "}
+                </Text>
+              </View>
+              <View>
+                <Text>
+                  {" "}
+                  <Text style={{ color: colors.primary, fontWeight: "bold" }}>
+                    Quantity:
+                  </Text>{" "}
+                  {product.count}{" "}
+                </Text>
+              </View>
+            </>
+          ))
+        }
+        titleText="Grand Amount:"
+        subSubTitleText="CreatedAt:"
+        title={FormatCurrency(Number(item.grandTotal))}
+        subTitle={item.paymentMethod}
+        subTitleText="Payment Method:"
+        subSubTitle={`${moment(item && item.createdAt).format("ddd LL")} `}
+      />
+    );
   };
 
   return (
@@ -87,8 +162,23 @@ function ManageDailySales({ navigation }) {
           data={FormatCurrency(Number(totalAmount))}
         />
       </View>
-
-      <FlatList
+      <SafeAreaView style={styles.recyclecontainer}>
+        <RecyclerListView
+          dataProvider={dataProvider}
+          layoutProvider={layoutProvider}
+          rowRenderer={rowRenderer}
+          // onEndReached={onEndReached}
+          // onEndReachedThreshold={0.5}
+          // renderFooter={renderFooter}
+          // renderAheadOffset={1}
+          scrollViewProps={{
+            refreshControl: (
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            ),
+          }}
+        />
+      </SafeAreaView>
+      {/* <FlatList
         data={sales}
         keyExtractor={(sale, index) => index.toString()}
         showsVerticalScrollIndicator={false}
@@ -112,7 +202,6 @@ function ManageDailySales({ navigation }) {
                 item.products.map((product, i) => (
                   <>
                     <View style={{ flexDirection: "row" }}>
-                      {/* <Text>{i + 1}</Text> */}
                       <Text style={{ color: colors.infor }}>
                         {product && product.name}
                         {", "}
@@ -150,16 +239,10 @@ function ManageDailySales({ navigation }) {
               subSubTitle={`${moment(item && item.createdAt).format(
                 "ddd LL"
               )} `}
-              // rightContent={(reset) => (
-              //   <ListActions
-              //     icon={"delete-empty"}
-              //     onPress={() => (handleDelete(index), reset())}
-              //   />
-              // )}
             />
           </View>
         )}
-      />
+      /> */}
     </>
   );
 }
@@ -177,5 +260,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     justifyContent: "center",
     alignItems: "center",
+  },
+  recyclecontainer: {
+    flexGrow: 1,
+    alignContent: "flex-start",
+    justifyContent: "flex-start",
   },
 });

@@ -7,6 +7,7 @@ import {
   ScrollView,
   FlatList,
   RefreshControl,
+  SafeAreaView,
 } from "react-native";
 import Header from "../components/Header";
 import colors from "../config/colors";
@@ -17,7 +18,12 @@ import DatePicker from "../components/DatePicker/DatePicker";
 import FormatCurrency from "../helpers/FormatCurrency";
 import ListItems from "../components/ListItems";
 import PurchaseListItem from "../components/PurchaseListItem";
-var { width } = Dimensions.get("window");
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from "recyclerlistview";
+const { width } = Dimensions.get("window");
 
 function MySales({ navigation }) {
   const [sales, setSales] = useState([]);
@@ -26,6 +32,28 @@ function MySales({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+
+  const [dataProvider, setDataProvider] = useState(
+    new DataProvider((r1, r2) => {
+      return r1 !== r2;
+    })
+  );
+
+  const [layoutProvider] = useState(
+    new LayoutProvider(
+      (index) => {
+        return index;
+      },
+      (type, dim) => {
+        dim.width = Dimensions.get("window").width;
+        dim.height = (width * 1) / 1;
+      }
+    )
+  );
+
+  useEffect(() => {
+    setDataProvider((prevState) => prevState.cloneWithRows(sales));
+  }, [sales]);
 
   useEffect(() => {
     handleSalesSubmit();
@@ -61,6 +89,39 @@ function MySales({ navigation }) {
     }, 2000);
   };
 
+  const rowRenderer = (type, item, index) => {
+    return (
+      <>
+        {item.products.map((product, i) => (
+          <>
+            <PurchaseListItem
+              iconActive={false}
+              chevronActive={false}
+              mainTitle={product.name}
+              titleText="Price:"
+              subTitleText="Quantity:"
+              title={FormatCurrency(product.sellingPrice * product.count)}
+              subTitle={product.count}
+            />
+          </>
+        ))}
+        <PurchaseListItem
+          iconActive={false}
+          chevronActive={false}
+          // mainTitle={product.name}
+          // titleText="Created Date: "
+          subTitleText="Grand Total: "
+          subSubSubTitleText="Created At: "
+          subSubTitleText="Payment Method:"
+          subSubTitle={item.paymentMethod}
+          subTitle={FormatCurrency(Number(item.grandTotal))}
+          subSubSubTitle={`${moment(item && item.createdAt).format("ddd LL")} `}
+        />
+      </>
+    );
+  };
+  // if (!sales?.length) return null;
+
   return (
     <>
       <Header navigation={navigation} HeaderTitle="My Sales" />
@@ -79,7 +140,24 @@ function MySales({ navigation }) {
         onPress={handleSalesSubmit}
         backgroundColor="airblue"
       />
-      <FlatList
+
+      <SafeAreaView style={{ flex: 1 }}>
+        <RecyclerListView
+          dataProvider={dataProvider}
+          layoutProvider={layoutProvider}
+          rowRenderer={rowRenderer}
+          // onEndReached={onEndReached}
+          // onEndReachedThreshold={0.5}
+          // renderFooter={renderFooter}
+          // renderAheadOffset={2}
+          scrollViewProps={{
+            refreshControl: (
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            ),
+          }}
+        />
+      </SafeAreaView>
+      {/* <FlatList
         data={sales}
         keyExtractor={(sale, index) => index.toString()}
         showsVerticalScrollIndicator={false}
@@ -123,7 +201,7 @@ function MySales({ navigation }) {
             />
           </View>
         )}
-      />
+      /> */}
     </>
   );
 }

@@ -109,6 +109,7 @@ function ManagePurcahseCartItems({ navigation }) {
           style={{
             backgroundColor: colors.airblue,
             padding: 10,
+            marginBottom: 10,
             justifyContent: "center",
             alignItems: "center",
           }}

@@ -188,6 +188,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: -15,
     position: "absolute",
     top: 35,
-    left: 80,
+    left: 70,
   },
 });

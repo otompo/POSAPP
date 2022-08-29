@@ -269,7 +269,6 @@ function ManageProductsInstock(props) {
       ) : (
         <SafeAreaView style={{ flex: 1 }}>
           <RecyclerListView
-            style={{ flex: 1 }}
             dataProvider={dataProvider}
             layoutProvider={layoutProvider}
             rowRenderer={rowRenderer}

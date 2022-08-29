@@ -77,7 +77,7 @@ export default CartListItems;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    paddingVertical: 25,
   },
   title: {
     fontWeight: "bold",
