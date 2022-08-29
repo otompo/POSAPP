@@ -635,10 +635,6 @@ function ManageProducts({ navigation }) {
             dataProvider={dataProvider}
             layoutProvider={layoutProvider}
             rowRenderer={rowRenderer}
-            // onEndReached={onEndReached}
-            // onEndReachedThreshold={0.5}
-            // renderFooter={renderFooter}
-            // renderAheadOffset={0}
             scrollViewProps={{
               refreshControl: (
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

@@ -25,7 +25,6 @@ import PurchaseListItem from "../components/PurchaseListItem";
 import ListActions from "../components/ListActions";
 import ModalTopInfor from "../components/ModalTopInfor";
 import Modal from "react-native-modal";
-import SubmitButton from "../components/Button/SubmitButton";
 import AppTextInput from "../components/Auth/AppTextInput";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Button } from "@rneui/themed";
