@@ -181,38 +181,6 @@ function ManageCartItems({ navigation }) {
           title="Grand  Total"
           data={FormatCurrency(Number(grandTotal))}
         />
-        {/* <FlatList
-        data={cart}
-        keyExtractor={(card, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item, index }) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              elevation: 2,
-              marginBottom: 5,
-            }}
-          >
-            <ListItems
-              chevronActive={true}
-              iconActive={false}
-              // mainTitleText="Name:"
-              mainTitle={item.name}
-              // subSubSubTitle={FormatCurrency(Number(item.sellingPrice))}
-              rightContent={(reset) => (
-                <ListActions
-                  bcolor="danger"
-                  icon="cart-remove"
-                  onPress={() => {
-                    dispatch(removeFromCart(cart, item._id));
-                    reset();
-                  }}
-                />
-              )}
-            />
-          </View>
-        )}
-      /> */}
 
         {cart.length === 0 ? (
           <View

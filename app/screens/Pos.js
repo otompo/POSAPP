@@ -121,18 +121,20 @@ function PosScreen({ navigation }) {
   };
 
   const handleScanned = ({ type, data }) => {
-    setScannedData(data);
-    if (Platform.OS === "android") {
-      ToastAndroid.showWithGravityAndOffset(
-        "Success",
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
-    } else {
-      AlertIOS.alert("Success");
-    }
+    let stringdata = JSON.parse(data);
+    setScannedData(stringdata);
+    // console.log(data.name);
+    // if (Platform.OS === "android") {
+    //   ToastAndroid.showWithGravityAndOffset(
+    //     "Success",
+    //     ToastAndroid.SHORT,
+    //     ToastAndroid.BOTTOM,
+    //     25,
+    //     50
+    //   );
+    // } else {
+    //   AlertIOS.alert("Success");
+    // }
 
     // if (data) {
     // setShowScanner(false);
@@ -172,7 +174,6 @@ function PosScreen({ navigation }) {
   // }
 
   const rowRenderer = (type, item, index) => {
-    // console.log(item);
     return (
       <ListItems
         chevronActive={true}
@@ -325,7 +326,7 @@ function PosScreen({ navigation }) {
           >
             <View>
               <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                {scannedData}
+                {scannedData.name}
               </Text>
             </View>
           </ScrollView>
