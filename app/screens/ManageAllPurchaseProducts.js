@@ -142,6 +142,7 @@ function ManageAllPurchaseProducts({ navigation }) {
       <Header
         justifyContent="center"
         HeaderTitle="Manage All Purchased Products"
+        backIcon={() => navigation.goBack()}
       />
       <View style={styles.container}>
         <View style={styles.subContainer}>

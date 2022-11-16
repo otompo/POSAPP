@@ -25,6 +25,7 @@ const AuthProvider = ({ children }) => {
     };
     loadFromAsyncStorage();
   }, []);
+
   return (
     <AuthContext.Provider value={[auth, setAuth]}>
       {children}

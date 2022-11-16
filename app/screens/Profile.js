@@ -49,7 +49,7 @@ function AccountScreen({ navigation }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.put(`/api/user/updateprofile`, {
+      const { data } = await axios.put(`/api/user`, {
         name,
         email,
         contactNum,

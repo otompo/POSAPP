@@ -26,7 +26,7 @@ import FormatCurrency from "../helpers/FormatCurrency";
 import moment from "moment";
 const { width } = Dimensions.get("window");
 
-function ManageProductsInstock(props) {
+function ManageProductsInstock({ navigation }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -187,7 +187,10 @@ function ManageProductsInstock(props) {
   if (!products?.length) return null;
   return (
     <>
-      <Header HeaderTitle="Manage Products Instock" justifyContent="center" />
+      <Header
+        HeaderTitle="Manage Products Instock"
+        backIcon={() => navigation.goBack()}
+      />
       <Search
         proWidth
         value={keyword}

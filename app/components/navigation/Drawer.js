@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthContext } from "../../context/authContext";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import Home from "../../screens/Home";
 import Dashboard from "../../screens/Dashboard";
 import PosScreen from "../../screens/Pos";
 import Settings from "../../screens/Settings";
@@ -22,6 +21,7 @@ import ManageReports from "../../screens/ManageReports";
 import ManagePurchase from "../../screens/ManagePurchase";
 
 const Drawer = createDrawerNavigator();
+
 function DrawRoot() {
   const [auth, setAuth] = useContext(AuthContext);
   const [role, setRole] = useState("");

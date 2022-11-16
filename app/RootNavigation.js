@@ -24,6 +24,7 @@ import ManageCartItems from "./screens/ManageCartItems";
 import ManagePurcahseCartItems from "./screens/ManagePurcahseCartItems";
 import { PurcahseProvider } from "./context/purchaseContext";
 import ManageAllPurchaseProducts from "./screens/ManageAllPurchaseProducts";
+import CategoryDetails from "./screens/CategoryDetails";
 // import ManageTrashStaff from "./screens/ManageTrashStaff";
 
 const Stack = createNativeStackNavigator();
@@ -192,6 +193,11 @@ function ScreensNav(props) {
           <Stack.Screen
             name="ManageAllPurchaseProducts"
             component={ManageAllPurchaseProducts}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CategoryDetails"
+            component={CategoryDetails}
             options={{ headerShown: false }}
           />
         </>

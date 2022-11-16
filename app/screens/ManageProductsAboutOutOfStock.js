@@ -25,7 +25,7 @@ import colors from "../config/colors";
 
 const { width } = Dimensions.get("window");
 
-function ManageProductsAboutOutOfStock(props) {
+function ManageProductsAboutOutOfStock({ navigation }) {
   const { stateData, dispatch } = useContext(PurchaseContext);
   const { cart } = stateData;
   const [products, setProducts] = useState([]);
@@ -135,10 +135,11 @@ function ManageProductsAboutOutOfStock(props) {
         HeaderTitle={
           <MaterialCommunityIcons name="cart-arrow-down" size={25} />
         }
-        HeaderSubTitle="Products About to OutOf Stock"
+        HeaderSubTitle="Products About to go OutOf Stock"
         textLeft={30}
         cartData={`${cart?.length}`}
         onPress={() => navigation.navigate("ManagePurcahseCartItems")}
+        backIcon={() => navigation.goBack()}
       />
       <Search
         proWidth

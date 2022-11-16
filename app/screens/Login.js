@@ -9,12 +9,12 @@ import {
   Dimensions,
   Text,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+// import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppTextInput from "../components/Auth/AppTextInput";
 import SubmitButton from "../components/Button/SubmitButton";
 import CircleLogo from "../components/Auth/CircleLogo";
-import { AuthContext } from "../context/authContext";
+// import { AuthContext } from "../context/authContext";
 import colors from "../config/colors";
 import axios from "axios";
 import useSettings from "../hooks/useSettings";
@@ -25,14 +25,14 @@ function Login({ navigation }) {
   const [email, setEmail] = useState("sasco@gmail.com");
   const [password, setPassword] = useState("otompo123@");
   const [loading, setLoading] = useState(false);
-  const [state, setState] = useContext(AuthContext);
+  // const [auth, setAuth] = useContext(AuthContext);
   const { name, companyLogo } = useSettings();
 
-  useEffect(() => {
-    if (state) {
-      navigation.navigate("Home");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (state) {
+  //     navigation.navigate("Home");
+  //   }
+  // }, []);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -51,6 +51,7 @@ function Login({ navigation }) {
       setLoading(false);
       return;
     }
+
     try {
       const { data } = await axios.post(`/api/auth/signin`, {
         email,
@@ -60,7 +61,7 @@ function Login({ navigation }) {
         alert(data.error);
         setLoading(false);
       } else {
-        setState(data);
+        // setAuth(data);
         await AsyncStorage.setItem("@auth", JSON.stringify(data));
         setEmail("");
         setPassword("");
@@ -76,7 +77,6 @@ function Login({ navigation }) {
         } else {
           AlertIOS.alert("success");
         }
-        // navigation.navigate("Home");
       }
     } catch (err) {
       setLoading(false);

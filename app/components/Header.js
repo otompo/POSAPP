@@ -19,13 +19,24 @@ function Header({
   cartData,
   onPress,
   textLeft = 100,
+  backIcon,
 }) {
   return (
     <SafeAreaView style={styles.headerMain}>
       <View style={[styles.headerInner, { justifyContent: justifyContent }]}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          {navigation && <Icon name="menu-outline" size={28} color="#fff" />}
-        </TouchableOpacity>
+        {navigation ? (
+          <TouchableOpacity onPress={() => navigation.openDrawer()}>
+            {navigation && <Icon name="menu-outline" size={28} color="#fff" />}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={backIcon}
+            // style={styles.backArrow}
+          >
+            {<Icon name="arrow-back" size={28} color="#fff" />}
+          </TouchableOpacity>
+        )}
+
         <Text style={styles.headerTitle}>{HeaderTitle}</Text>
         <Text style={[styles.headerSubTitle, { left: textLeft }]}>
           {HeaderSubTitle}
@@ -78,5 +89,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     right: 30,
+  },
+  backArrow: {
+    position: "absolute",
+    top: 0,
+    left: 0,
   },
 });

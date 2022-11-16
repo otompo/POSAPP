@@ -29,7 +29,7 @@ import {
 
 const { width } = Dimensions.get("window");
 
-function ManageProductsAboutToExpire(props) {
+function ManageProductsAboutToExpire({ navigation }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -192,8 +192,8 @@ function ManageProductsAboutToExpire(props) {
   return (
     <>
       <Header
-        HeaderTitle="Manage Products About To Expire"
-        justifyContent="center"
+        HeaderTitle="Products About To Expire"
+        backIcon={() => navigation.goBack()}
       />
       <Search
         proWidth

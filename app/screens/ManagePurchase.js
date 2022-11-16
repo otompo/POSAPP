@@ -21,7 +21,6 @@ import {
   DataProvider,
   LayoutProvider,
 } from "recyclerlistview";
-import colors from "../config/colors";
 
 const { width } = Dimensions.get("window");
 

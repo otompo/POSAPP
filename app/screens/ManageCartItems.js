@@ -33,7 +33,7 @@ import { Button } from "@rneui/themed";
 import AdminCards from "../components/AdminCards";
 import SubmitButton from "../components/Button/SubmitButton";
 import AppTextInput from "../components/Auth/AppTextInput";
-import DropDown from "../components/DropDown";
+// import DropDown from "../components/DropDown";
 import axios from "axios";
 
 const selectPaymentMethod = () => {
@@ -64,7 +64,7 @@ function ManageCartItems({ navigation }) {
   const [grandTotal, setGandTotal] = useState(0);
   const [count, setCount] = useState("");
 
-  const [unitPrice, setUnitPrice] = useState(null);
+  // const [unitPrice, setUnitPrice] = useState(null);
 
   const [inEditMode, setInEditMode] = useState({
     status: false,
@@ -169,7 +169,7 @@ function ManageCartItems({ navigation }) {
       <Header
         HeaderTitle={<MaterialCommunityIcons name="cart-arrow-up" size={25} />}
         cartData={`${cart?.length}`}
-        onPress={() => navigation.goBack()}
+        backIcon={() => navigation.goBack()}
       />
       <SafeAreaView style={styles.container}>
         <AdminCards

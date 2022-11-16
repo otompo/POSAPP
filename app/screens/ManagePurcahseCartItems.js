@@ -101,7 +101,7 @@ function ManagePurcahseCartItems({ navigation }) {
           <MaterialCommunityIcons name="cart-arrow-down" size={25} />
         }
         cartData={`${cart?.length}`}
-        onPress={() => navigation.goBack()}
+        backIcon={() => navigation.goBack()}
       />
       <SafeAreaView style={styles.container}>
         <TouchableOpacity

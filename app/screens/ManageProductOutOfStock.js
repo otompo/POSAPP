@@ -137,9 +137,10 @@ function ManageProductOutOfStock({ navigation }) {
           <MaterialCommunityIcons name="cart-arrow-down" size={25} />
         }
         textLeft={30}
-        HeaderSubTitle="Products OutOf Stock"
+        HeaderSubTitle="Manage Products OutOf Stock"
         cartData={`${cart?.length}`}
         onPress={() => navigation.navigate("ManagePurcahseCartItems")}
+        backIcon={() => navigation.goBack()}
       />
       <Search
         proWidth

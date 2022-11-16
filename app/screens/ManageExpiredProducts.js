@@ -28,7 +28,7 @@ import moment from "moment";
 const { width } = Dimensions.get("window");
 import axios from "axios";
 
-function ManageExpiredProducts(props) {
+function ManageExpiredProducts({ navigation }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -190,7 +190,10 @@ function ManageExpiredProducts(props) {
 
   return (
     <>
-      <Header HeaderTitle="Manage Expired Products" justifyContent="center" />
+      <Header
+        HeaderTitle="Manage Expired Products"
+        backIcon={() => navigation.goBack()}
+      />
       <Search
         proWidth
         value={keyword}

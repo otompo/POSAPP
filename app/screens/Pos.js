@@ -12,6 +12,8 @@ import {
   ToastAndroid,
   Platform,
   AlertIOS,
+  FlatList,
+  TouchableOpacity,
 } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -20,6 +22,7 @@ import Header from "../components/Header";
 import axios from "axios";
 import Search from "../components/Search";
 import ListItems from "../components/ListItems";
+import CategoriesMenu from "../components/CategoriesMenu";
 import FormatCurrency from "../helpers/FormatCurrency";
 import { CartContext } from "../context/cartContext";
 import { addToCart } from "../actions/Actions";
@@ -32,8 +35,9 @@ import {
 import SubHeader from "../components/SubHeader";
 import colors from "../config/colors";
 import ModalTopInfor from "../components/ModalTopInfor";
-
+import * as Haptics from "expo-haptics";
 const { width } = Dimensions.get("window");
+
 function PosScreen({ navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [scanned, setScanned] = useState(false);
@@ -47,6 +51,10 @@ function PosScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [keyword, setKeyword] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  let yourArr = [];
+  yourArr.push(scannedData);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -77,6 +85,7 @@ function PosScreen({ navigation }) {
   useEffect(() => {
     loadProducts();
     loadProductsSearch();
+    loadCategories();
   }, [cart]);
 
   const askPermissions = () => {
@@ -120,9 +129,21 @@ function PosScreen({ navigation }) {
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const { data } = await axios.get(`/api/category`);
+      setCategories(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleScanned = ({ type, data }) => {
     let stringdata = JSON.parse(data);
     setScannedData(stringdata);
+    // Vibration.vibrate();
+    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     // console.log(data.name);
     // if (Platform.OS === "android") {
     //   ToastAndroid.showWithGravityAndOffset(
@@ -153,7 +174,7 @@ function PosScreen({ navigation }) {
     setRefreshing(true);
     setTimeout(() => {
       loadProducts();
-      // loadProductsCount();
+      loadCategories();
       setRefreshing(false);
     }, 2000);
   };
@@ -275,18 +296,39 @@ function PosScreen({ navigation }) {
           </ScrollView>
         </>
       ) : (
-        <SafeAreaView style={{ flex: 1 }}>
-          <RecyclerListView
-            dataProvider={dataProvider}
-            layoutProvider={layoutProvider}
-            rowRenderer={rowRenderer}
-            scrollViewProps={{
-              refreshControl: (
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              ),
-            }}
-          />
-        </SafeAreaView>
+        <>
+          <View>
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={categories}
+              style={styles.flatList}
+              keyExtractor={(category) => category._id.toString()}
+              renderItem={({ item }) => (
+                <CategoriesMenu
+                  title={item.name}
+                  // icon={item.icon}
+                  onPress={() => navigation.navigate("CategoryDetails", item)}
+                />
+              )}
+            />
+          </View>
+          <SafeAreaView style={{ flex: 1 }}>
+            <RecyclerListView
+              dataProvider={dataProvider}
+              layoutProvider={layoutProvider}
+              rowRenderer={rowRenderer}
+              scrollViewProps={{
+                refreshControl: (
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                ),
+              }}
+            />
+          </SafeAreaView>
+        </>
       )}
 
       <Modal isVisible={isModalVisible}>
@@ -324,10 +366,38 @@ function PosScreen({ navigation }) {
               marginHorizontal: 20,
             }}
           >
-            <View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
               <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                 {scannedData.name}
               </Text>
+              {scannedData ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    // console.log(yourArr);
+                    dispatch(addToCart(scannedData, yourArr));
+                  }}
+                  style={{
+                    height: 35,
+                    width: 35,
+                    backgroundColor: colors.toolbar,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 100,
+                    borderWidth: 1,
+                    borderColor: colors.primary,
+                    elevation: 2,
+                  }}
+                >
+                  {/* <Text>addToCart</Text> */}
+                  <MaterialCommunityIcons
+                    name="cart"
+                    size={25}
+                    color={colors.primary}
+                  />
+                </TouchableOpacity>
+              ) : null}
             </View>
           </ScrollView>
         </View>
@@ -344,5 +414,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+  },
+  flatList: {
+    height: 62,
+    flexGrow: 0,
   },
 });

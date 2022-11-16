@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { StyleSheet, LogBox, View, StatusBar } from "react-native";
+import { useEffect, useState } from "react";
+import { LogBox } from "react-native";
 // import colors from "./app/config/colors";
 import RootNavigation from "./app/RootNavigation";
 import * as SplashScreen from "expo-splash-screen";

@@ -7,8 +7,7 @@ import { ToastAndroid, Platform, AlertIOS } from "react-native";
 // import generator from "generate-password";
 
 export const addToCart = (product, cart) => {
-  // console.log("Product", product);
-
+  // console.log("cart", cart);
   const check = cart.every((item) => {
     return item._id !== product._id;
   });
