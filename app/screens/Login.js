@@ -22,8 +22,8 @@ import Header from "../components/Header";
 var { width } = Dimensions.get("window");
 
 function Login({ navigation }) {
-  const [email, setEmail] = useState("sasco@gmail.com");
-  const [password, setPassword] = useState("otompo123@");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   // const [auth, setAuth] = useContext(AuthContext);
   const { name, companyLogo } = useSettings();
